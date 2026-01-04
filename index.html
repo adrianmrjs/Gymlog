@@ -62,59 +62,35 @@ small { color: var(--text-muted); font-size: 12px; }
 .btn.icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; background: rgba(255,255,255,0.05); box-shadow: none; color: white; }
 .btn.small { padding: 8px 12px; font-size: 12px; width: auto; background: transparent; border: 1px dashed var(--surface-hover); color: var(--primary); box-shadow: none; }
 .btn.text { background: none; box-shadow: none; padding: 8px; width: auto; color: var(--text-muted); font-size: 14px; }
+.btn.danger { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); box-shadow: none; }
 
 /* Tarjetas */
 .card { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.03); }
 
-/* --- 3. INPUTS & CHECKBOXES (SOLUCIONADO) --- */
-
-/* Input de Texto/Numero (Entrenamientos) */
-input[type="number"], input[type="text"] { 
+/* --- 3. INPUTS & CHECKBOXES --- */
+input[type="number"], input[type="text"], select { 
     background: #020617; border: 1px solid var(--surface-hover); color: white; 
     padding: 10px; border-radius: 8px; text-align: center; width: 100%; 
     font-size: 16px; font-weight: 600; outline: none; font-family: inherit;
 }
-input:focus { border-color: var(--primary); }
+input:focus, select:focus { border-color: var(--primary); }
 
-/* Checkbox de CALENTAMIENTO (Nativo mejorado) */
-.warmup-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;
-}
+/* Checkbox Calentamiento */
+.warmup-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
 .warmup-item:last-child { border-bottom: none; }
-.warmup-item span { color: #cbd5e1; font-size: 14px; }
+input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24px; margin: 0; accent-color: var(--success); cursor: pointer; }
 
-/* Reset específico para checkbox nativo */
-input[type="checkbox"].native-check {
-    appearance: auto; width: 24px; height: 24px; margin: 0; 
-    accent-color: var(--success); cursor: pointer;
-    background: transparent; border: none; padding: 0; /* Reset del input global */
-}
-
-/* Checkbox de SERIES (Botón grande personalizado) */
-.check-btn { 
-    width: 100%; height: 42px; border-radius: 8px; background: #020617; 
-    border: 1px solid var(--surface-hover); display: flex; align-items: center; 
-    justify-content: center; cursor: pointer; transition: all 0.2s; 
-}
+/* Checkbox Series */
+.check-btn { width: 100%; height: 42px; border-radius: 8px; background: #020617; border: 1px solid var(--surface-hover); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
 .check-btn.checked { background: var(--success); border-color: var(--success); }
 .check-btn i { opacity: 0; transform: scale(0.5); transition: 0.2s; color: #022c22; font-weight: bold; font-size: 20px; }
 .check-btn.checked i { opacity: 1; transform: scale(1); }
 
-/* --- 4. GRILLAS DE ENTRENAMIENTO (ALINEACIÓN) --- */
-/* Header de la tabla */
-.sets-header { 
-    display: grid; gap: 8px; font-size: 10px; color: var(--text-muted); 
-    text-align: center; margin-bottom: 6px; font-weight: 700; letter-spacing: 0.5px;
-    padding: 0 2px; /* Ajuste fino */
-}
-/* Filas de la tabla */
+/* --- 4. GRILLAS --- */
+.sets-header { display: grid; gap: 8px; font-size: 10px; color: var(--text-muted); text-align: center; margin-bottom: 6px; font-weight: 700; padding: 0 2px; }
 .set-row { margin-bottom: 8px; align-items: center; display: grid; gap: 8px; }
-
-/* Grid: # (30px) | Inputs (Flex) | Checkbox (42px) */
 .grid-weighted { grid-template-columns: 30px 1fr 1fr 44px; }
 .grid-simple { grid-template-columns: 30px 1fr 44px; }
-
 .set-num { text-align: center; color: var(--text-muted); font-weight: 600; font-size: 12px; }
 
 /* --- 5. EXTRAS --- */
@@ -122,7 +98,6 @@ input[type="checkbox"].native-check {
 .hidden { display: none !important; }
 .tag { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .tag.blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-.tag.orange { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
 
 /* Sync Badge */
 .sync-badge { background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(16, 185, 129, 0.3); }
@@ -130,19 +105,12 @@ input[type="checkbox"].native-check {
 .sync-badge.error { background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
 .sync-spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* Animaciones */
 .screen { display: none; padding: 20px; animation: fadeIn 0.3s; }
 .screen.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Timer Float */
-.timer-float {
-    position: fixed; bottom: calc(90px + var(--safe-area-bottom)); right: 20px; left: 20px;
-    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
-    border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 16px; padding: 12px 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 200;
-}
+/* Timer */
+.timer-float { position: fixed; bottom: calc(90px + var(--safe-area-bottom)); right: 20px; left: 20px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 200; }
 
 /* Calendario */
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-top: 10px; }
@@ -153,31 +121,25 @@ input[type="checkbox"].native-check {
 .cal-day.has-workout::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background-color: var(--success); border-radius: 50%; }
 .cal-day.selected.has-workout::after { background-color: white; }
 
-/* Historial Detallado */
+/* Historial */
 .hist-ex-title { color: var(--primary); font-weight: 700; font-size: 14px; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; }
 .hist-set-row { display: flex; justify-content: space-between; font-size: 13px; color: #cbd5e1; margin-bottom: 4px; padding: 4px 8px; background: rgba(0,0,0,0.2); border-radius: 6px; }
-.hist-set-num { color: var(--text-muted); font-size: 11px; margin-right: 8px; }
+
+/* Editor */
+.editor-item-card { margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); }
+.editor-input-group { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; margin-bottom: 8px; }
 
 /* Nav */
-.nav {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    width: 90%; max-width: 440px;
-    background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(12px);
-    border-radius: 24px; padding: 12px 40px;
-    display: flex; justify-content: space-between; align-items: center;
-    border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
-    z-index: 1000;
-}
+.nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 440px; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(12px); border-radius: 24px; padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 1000; }
 .nav-item { background: none; border: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-.nav-item.active { color: var(--primary); }
-.nav-item i { font-size: 22px; }
+.nav-item.active { color: var(--primary); } .nav-item i { font-size: 22px; }
 </style>
 </head>
 <body>
 
 <script>
-    // ⚠️ REEMPLAZAR CON TU URL DE GOOGLE SCRIPT ⚠️
-    const API_URL = "https://script.google.com/macros/s/AKfycbxEc1eyXOkWvTCq71RrBdD2VgRLS6RUUYBnvcc75i_nPJiFnod6gZiNFVgy32ZrzYZhvw/exec"; 
+    // ⚠️ REEMPLAZA ESTO ⚠️
+    const API_URL = "https://script.google.com/macros/s/AKfycbwcqHNwPq6JReM8BJMAvyhuo2JhsVrNJeDj64TQBplxpF6SDkFkvPeCiSAHz564OGqG/exec"; 
 </script>
 
 <div id="rest-timer" class="timer-float hidden">
@@ -227,20 +189,11 @@ input[type="checkbox"].native-check {
             </div>
         </div>
 
-        <h3 style="margin:25px 0 10px; color:var(--text-muted); font-size:12px; letter-spacing:1px">RUTINAS</h3>
-        
-        <div class="card" onclick="startWorkout('fuerzaA')">
-            <div class="flex-between"><span class="tag blue">Lun / Vie</span><i class="ri-arrow-right-s-line" style="color:var(--text-muted)"></i></div>
-            <h2 style="margin-top:8px">🏋️ Fuerza A (Full Body)</h2>
+        <div class="flex-between" style="margin:25px 0 10px">
+            <h3 style="margin:0; color:var(--text-muted); font-size:12px; letter-spacing:1px">RUTINAS</h3>
+            <button class="btn small" onclick="go('editor')" style="border:none; color:var(--primary)"><i class="ri-edit-box-line"></i> Editar</button>
         </div>
-        <div class="card" onclick="startWorkout('cardio')">
-            <div class="flex-between"><span class="tag orange">Mar / Jue</span><i class="ri-arrow-right-s-line" style="color:var(--text-muted)"></i></div>
-            <h2 style="margin-top:8px">🚴 Bici + Movilidad</h2>
-        </div>
-        <div class="card" onclick="startWorkout('fuerzaB')">
-            <div class="flex-between"><span class="tag blue">Miércoles</span><i class="ri-arrow-right-s-line" style="color:var(--text-muted)"></i></div>
-            <h2 style="margin-top:8px">🔥 Fuerza B (Accesorios)</h2>
-        </div>
+        <div id="routines-list"></div>
         
         <button class="btn text" onclick="resetApp()" style="margin: 30px auto; display:block; font-size:12px; opacity:0.5">Resetear App</button>
     </div>
@@ -287,6 +240,31 @@ input[type="checkbox"].native-check {
         <div id="history-list"></div>
     </div>
 
+    <div id="editor" class="screen" style="padding-bottom:40px">
+        <div class="flex-between" style="margin-bottom:20px">
+            <button class="btn icon" onclick="go('home')"><i class="ri-arrow-left-line"></i></button>
+            <h2>Editor Rutinas</h2>
+            <button class="btn icon" onclick="createNewRoutine()" style="color:var(--success)"><i class="ri-add-line"></i></button>
+        </div>
+        <div id="editor-list"></div>
+    </div>
+
+    <div id="editor-detail" class="screen" style="padding-bottom:40px">
+        <div style="position:sticky; top:0; background:var(--bg-app); padding:15px 0; z-index:10; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05)">
+            <button class="btn icon" onclick="go('editor')"><i class="ri-arrow-left-line"></i></button>
+            <input type="text" id="routine-title-input" placeholder="Nombre Rutina" style="background:transparent; border:none; font-size:18px; font-weight:700; text-align:center; color:white; width:60%">
+            <button class="btn icon" onclick="saveRoutineDetail()" style="color:var(--success)"><i class="ri-save-line"></i></button>
+        </div>
+        
+        <div style="text-align:center; padding:10px 0;">
+            <input type="text" id="routine-tag-input" placeholder="Etiqueta (ej: Lun/Vie)" style="background:rgba(255,255,255,0.05); border:none; border-radius:20px; font-size:12px; padding:6px 12px; width:50%; color:#60a5fa;">
+        </div>
+
+        <div id="routine-exercises-list" style="margin-top:20px"></div>
+        <button class="btn small" onclick="addExerciseInput()" style="margin:20px auto; display:block; width:auto; border-color:var(--primary); color:var(--primary)">+ Agregar Ejercicio</button>
+        <button class="btn danger" id="delete-routine-btn" style="margin-top:40px">Eliminar Rutina</button>
+    </div>
+
     <nav id="navbar" class="nav">
         <button class="nav-item active" onclick="go('home')"><i class="ri-home-5-line"></i></button>
         <button class="nav-item" onclick="go('history')"><i class="ri-calendar-check-line"></i></button>
@@ -294,369 +272,189 @@ input[type="checkbox"].native-check {
 </div>
 
 <script>
-/* ---------------- LÓGICA DE LA APP ---------------- */
-
-// 1. BASE DE DATOS LOCAL
-const DB = {
-    templates: {
-        fuerzaA: { title: "Fuerza A", exercises: [{name:"Sentadilla",type:"body",note:"Peso corporal"},{name:"Press Pecho",type:"weighted",note:"Codos 45°"},{name:"Remo",type:"weighted",note:"Espalda recta"},{name:"Peso Muerto",type:"weighted",note:"Liviano"},{name:"Plancha",type:"time",note:"30-40 seg"}] },
-        fuerzaB: { title: "Fuerza B", exercises: [{name:"Zancadas",type:"body",note:"10/pierna"},{name:"Hombros",type:"weighted",note:"Sentado"},{name:"Bíceps",type:"weighted",note:"Controlado"},{name:"Tríceps",type:"weighted",note:"Cerrado"}] },
-        cardio: { title: "Cardio", exercises: [{name:"Bici",type:"time",note:"Ritmo constante"},{name:"Estiramientos",type:"time",note:"Pecho/Espalda"}] }
-    },
-    warmup: ["Movilidad Cuello", "Círculos Hombros", "Gato-Vaca", "Sentadillas Aire", "5 min suave"]
+// 1. DATA & DEFAULTS
+const DEFAULT_ROUTINES = {
+    fuerzaA: { title: "Fuerza A (Full Body)", tag:"Lun/Vie", exercises: [{name:"Sentadilla",type:"body",note:"Peso corporal"},{name:"Press Pecho",type:"weighted",note:"Codos 45°"},{name:"Remo",type:"weighted",note:"Espalda recta"},{name:"Peso Muerto",type:"weighted",note:"Liviano"},{name:"Plancha",type:"time",note:"30-40 seg"}] },
+    fuerzaB: { title: "Fuerza B (Accesorios)", tag:"Miércoles", exercises: [{name:"Zancadas",type:"body",note:"10/pierna"},{name:"Hombros",type:"weighted",note:"Sentado"},{name:"Bíceps",type:"weighted",note:"Controlado"},{name:"Tríceps",type:"weighted",note:"Cerrado"}] },
+    cardio: { title: "Cardio + Movilidad", tag:"Mar/Jue", exercises: [{name:"Bici",type:"time",note:"Ritmo constante"},{name:"Estiramientos",type:"time",note:"Pecho/Espalda"}] }
 };
-
+let ROUTINES = JSON.parse(localStorage.getItem('pro_tracker_routines')) || DEFAULT_ROUTINES;
+const WARMUP = ["Movilidad Cuello", "Círculos Hombros", "Gato-Vaca", "Sentadillas Aire", "5 min suave"];
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let currentDate = new Date();
-let selectedDateISO = getLocalISO();
+let currentDate = new Date(), selectedDateISO = getLocalISO(), currentRoutineId = null;
 
 // 2. HELPERS
-function getLocalISO(d = new Date()) {
-    const z = d.getTimezoneOffset() * 60 * 1000;
-    return new Date(d - z).toISOString().split('T')[0];
-}
-
+function getLocalISO(d=new Date()){ const z=d.getTimezoneOffset()*60*1000; return new Date(d-z).toISOString().split('T')[0]; }
 function go(id){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-    
     const nav = document.getElementById('navbar');
-    if(id === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
-    if(id === 'history') {
-        document.querySelectorAll('.nav-item')[1].classList.add('active');
-        renderCalendar();
-        renderHistoryList(selectedDateISO);
-    }
-    
-    if(id === 'training') nav.classList.add('hidden');
-    else nav.classList.remove('hidden');
+    if(id==='home'){document.querySelectorAll('.nav-item')[0].classList.add('active'); renderRoutinesHome();}
+    if(id==='history'){document.querySelectorAll('.nav-item')[1].classList.add('active'); renderCalendar(); renderHistoryList(selectedDateISO);}
+    if(id==='editor') renderEditorList();
+    if(['training','editor','editor-detail'].includes(id)) nav.classList.add('hidden'); else nav.classList.remove('hidden');
 }
 
-// 3. SINCRONIZACIÓN BIDIRECCIONAL (SÚPER SYNC)
-function updateSyncUI(status) {
-    const el = document.getElementById('sync-status');
-    const i = el.querySelector('i'), t = el.querySelector('span');
-    if(status==='synced'){el.className='sync-badge'; i.className='ri-cloud-check-line'; iconSpin(false); t.innerText="Al día";}
-    else if(status==='syncing'){el.className='sync-badge pending'; i.className='ri-loader-4-line'; iconSpin(true); t.innerText="Sync...";}
-    else if(status==='pending'){el.className='sync-badge pending'; i.className='ri-cloud-off-line'; iconSpin(false); t.innerText="Sync";}
-    else {el.className='sync-badge error'; i.className='ri-error-warning-line'; iconSpin(false); t.innerText="Error";}
-}
-function iconSpin(spin){ 
-    const i = document.querySelector('#sync-status i'); 
-    spin ? i.classList.add('sync-spin') : i.classList.remove('sync-spin'); 
+// 3. SÚPER SYNC
+function updateSyncUI(s){
+    const el=document.getElementById('sync-status'), i=el.querySelector('i'), t=el.querySelector('span');
+    if(s==='synced'){el.className='sync-badge';i.className='ri-cloud-check-line';i.classList.remove('sync-spin');t.innerText="Al día";}
+    else if(s==='syncing'){el.className='sync-badge pending';i.className='ri-loader-4-line sync-spin';t.innerText="Sync...";}
+    else if(s==='pending'){el.className='sync-badge pending';i.className='ri-cloud-off-line';i.classList.remove('sync-spin');t.innerText="Guardar";}
+    else{el.className='sync-badge error';i.className='ri-error-warning-line';i.classList.remove('sync-spin');t.innerText="Error";}
 }
 
 async function forceSync() {
-    if(API_URL.includes("GOOGLE")) { alert("Configura la URL de Google Script"); return; }
-    if(!navigator.onLine) { alert("Sin internet"); return; }
-    
+    if(API_URL.includes("GOOGLE")) { alert("Configura la URL"); return; } if(!navigator.onLine) { alert("Offline"); return; }
     updateSyncUI('syncing');
-    
     try {
-        // A. SUBIR LO PENDIENTE
-        const h = JSON.parse(localStorage.getItem('pro_tracker_db')) || [];
-        const w = JSON.parse(localStorage.getItem('weight_log')) || [];
-        const uH = h.filter(x => !x.synced);
-        const uW = w.filter(x => !x.synced);
+        const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[], w=JSON.parse(localStorage.getItem('weight_log'))||[];
+        const uH=h.filter(x=>!x.synced), uW=w.filter(x=>!x.synced);
+        if(uH.length>0||uW.length>0){ 
+            for(let s of uH){await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'save_workout',...s})});s.synced=true;}
+            localStorage.setItem('pro_tracker_db',JSON.stringify(h));
+            for(let i of uW){await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'save_weight',date:i.date,weight:i.weight})});i.synced=true;}
+            localStorage.setItem('weight_log',JSON.stringify(w));
+        }
         
-        if(uH.length > 0 || uW.length > 0) {
-            for(let s of uH) {
-                await fetch(API_URL, { method:'POST', mode:'no-cors', body:JSON.stringify({action:'save_workout', ...s}) });
-                s.synced = true;
-            }
-            localStorage.setItem('pro_tracker_db', JSON.stringify(h));
-            
-            for(let i of uW) {
-                await fetch(API_URL, { method:'POST', mode:'no-cors', body:JSON.stringify({action:'save_weight', date:i.date, weight:i.weight}) });
-                i.synced = true;
-            }
-            localStorage.setItem('weight_log', JSON.stringify(w));
+        const localR = JSON.parse(localStorage.getItem('pro_tracker_routines'));
+        if(localR) await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'save_routines',payload:localR})});
+
+        const res=await fetch(API_URL); const cloud=await res.json();
+        
+        const mapH=new Map(); cloud.history.forEach(x=>mapH.set(x.id,x)); h.forEach(x=>{if(!mapH.has(x.id))mapH.set(x.id,x)}); 
+        localStorage.setItem('pro_tracker_db',JSON.stringify(Array.from(mapH.values())));
+        
+        if(cloud.weights?.length){
+            localStorage.setItem('weight_log',JSON.stringify(cloud.weights)); 
+            const l=cloud.weights[cloud.weights.length-1]; 
+            localStorage.setItem('user_weight_current',l.weight); 
+            localStorage.setItem('user_weight_date',new Date(l.date).toLocaleDateString('es-ES',{day:'numeric',month:'short'}));
+        }
+        
+        if(cloud.routines) {
+            localStorage.setItem('pro_tracker_routines', JSON.stringify(cloud.routines));
+            ROUTINES = cloud.routines;
+            renderRoutinesHome();
         }
 
-        // B. BAJAR Y RESTAURAR (Por si es un reset)
-        const res = await fetch(API_URL);
-        const cloud = await res.json();
-        
-        // Merge History
-        const mapH = new Map();
-        cloud.history.forEach(x => mapH.set(x.id, x)); // Prioridad Nube
-        h.forEach(x => { if(!mapH.has(x.id)) mapH.set(x.id, x); }); // Conservar locales no subidos
-        localStorage.setItem('pro_tracker_db', JSON.stringify(Array.from(mapH.values())));
+        updateSyncUI('synced'); confetti({particleCount:50,spread:60,origin:{y:0.1},colors:['#10b981']}); 
+        renderStats(); renderCalendar(); if(selectedDateISO) renderHistoryList(selectedDateISO);
+    } catch(e){ console.error(e); updateSyncUI('error'); }
+}
+async function downloadData(){await forceSync();alert("Datos actualizados");}
 
-        // Merge Weight
-        if(cloud.weights && cloud.weights.length > 0) {
-            localStorage.setItem('weight_log', JSON.stringify(cloud.weights));
-            const last = cloud.weights[cloud.weights.length -1];
-            localStorage.setItem('user_weight_current', last.weight);
-            localStorage.setItem('user_weight_date', new Date(last.date).toLocaleDateString('es-ES',{day:'numeric',month:'short'}));
-        }
-
-        updateSyncUI('synced');
-        confetti({ particleCount: 50, spread: 60, origin: { y: 0.1 }, colors:['#10b981'] });
-        renderStats(); renderCalendar();
-        if(selectedDateISO) renderHistoryList(selectedDateISO);
-
-    } catch(e) { console.error(e); updateSyncUI('error'); }
+// 4. EDITOR RUTINAS (MODIFICADO)
+function renderRoutinesHome() {
+    const c = document.getElementById('routines-list'); c.innerHTML = '';
+    Object.keys(ROUTINES).forEach(id => {
+        const r = ROUTINES[id]; const tag = r.tag ? `<span class="tag blue">${r.tag}</span>` : '';
+        c.innerHTML += `<div class="card" onclick="startWorkout('${id}')"><div class="flex-between">${tag}<i class="ri-arrow-right-s-line" style="color:var(--text-muted)"></i></div><h2 style="margin-top:8px">${r.title}</h2></div>`;
+    });
+}
+function renderEditorList() {
+    const c = document.getElementById('editor-list'); c.innerHTML = '';
+    Object.keys(ROUTINES).forEach(id => {
+        c.innerHTML += `<div class="card flex-between" onclick="editRoutine('${id}')"><strong>${ROUTINES[id].title}</strong><i class="ri-edit-2-line" style="color:var(--text-muted)"></i></div>`;
+    });
+}
+function createNewRoutine() { currentRoutineId = 'custom_' + Date.now(); ROUTINES[currentRoutineId] = { title: "", tag:"", exercises: [] }; editRoutine(currentRoutineId); }
+function editRoutine(id) {
+    currentRoutineId = id; const r = ROUTINES[id];
+    document.getElementById('routine-title-input').value = r.title;
+    document.getElementById('routine-tag-input').value = r.tag || ""; // Cargar la etiqueta
+    const list = document.getElementById('routine-exercises-list'); list.innerHTML = '';
+    r.exercises.forEach(ex => addExerciseInput(ex));
+    const delBtn = document.getElementById('delete-routine-btn');
+    delBtn.onclick = () => deleteRoutine(id); delBtn.style.display = Object.keys(ROUTINES).length > 1 ? 'block' : 'none';
+    go('editor-detail');
+}
+function addExerciseInput(ex = null) {
+    const div = document.createElement('div'); div.className = 'card editor-item-card';
+    div.innerHTML = `
+        <div class="editor-input-group"><input type="text" placeholder="Nombre Ejercicio" class="ex-name" value="${ex?.name||''}" style="text-align:left"><select class="ex-type"><option value="weighted" ${ex?.type==='weighted'?'selected':''}>Con Peso</option><option value="body" ${ex?.type==='body'?'selected':''}>Corporal</option><option value="time" ${ex?.type==='time'?'selected':''}>Tiempo</option></select></div>
+        <div class="flex-between"><input type="text" placeholder="Nota (ej: Codos 45°)" class="ex-note" value="${ex?.note||''}" style="text-align:left; width:80%"><button class="btn icon small" onclick="this.closest('.editor-item-card').remove()" style="color:var(--danger)"><i class="ri-delete-bin-line"></i></button></div>`;
+    document.getElementById('routine-exercises-list').appendChild(div);
+}
+function saveRoutineDetail() {
+    const title = document.getElementById('routine-title-input').value.trim(); if(!title) return alert("Ponle nombre");
+    const tag = document.getElementById('routine-tag-input').value.trim(); // Guardar etiqueta
+    const exercises = [];
+    document.querySelectorAll('.editor-item-card').forEach(card => {
+        const name = card.querySelector('.ex-name').value.trim();
+        if(name) exercises.push({ name, type: card.querySelector('.ex-type').value, note: card.querySelector('.ex-note').value.trim() });
+    });
+    if(!exercises.length) return alert("Agrega ejercicios");
+    ROUTINES[currentRoutineId] = { title, tag, exercises }; // Guardar en el objeto
+    localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES));
+    go('editor');
+    updateSyncUI('pending');
+}
+function deleteRoutine(id) { 
+    if(confirm("¿Eliminar?")) { delete ROUTINES[id]; localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES)); go('editor'); updateSyncUI('pending'); }
 }
 
-// 4. ELIMINAR ITEM
-async function deleteItem(id) {
-    if(!confirm("¿Borrar? Se eliminará de la nube.")) return;
-    let h = JSON.parse(localStorage.getItem('pro_tracker_db')) || [];
-    h = h.filter(x => x.id !== id);
-    localStorage.setItem('pro_tracker_db', JSON.stringify(h));
-    renderCalendar(); renderHistoryList(selectedDateISO); renderStats();
-    if(navigator.onLine && !API_URL.includes("GOOGLE")) {
-        try { await fetch(API_URL, {method:'POST', mode:'no-cors', body:JSON.stringify({action:'delete_workout', id: id})}); } catch(e){}
-    }
-}
-
-async function downloadData() {
-    await forceSync();
-    alert("Datos actualizados desde la nube.");
-}
-
-// 5. CHART & STATS
-let chart = null;
-function renderStats() {
-    const h = JSON.parse(localStorage.getItem('pro_tracker_db')) || [];
-    document.getElementById('total-sessions').innerText = h.length;
-    
-    const w = localStorage.getItem('user_weight_current');
-    if(w) {
-        document.getElementById('current-weight-display').innerText = w + ' kg';
-        document.getElementById('last-weight-date').innerText = localStorage.getItem('user_weight_date');
-    }
-    
-    const pending = h.some(x=>!x.synced) || (JSON.parse(localStorage.getItem('weight_log'))||[]).some(x=>!x.synced);
-    updateSyncUI(pending ? 'pending' : 'synced');
-
-    // Chart
-    const ctx = document.getElementById('weightChart');
-    if(ctx) {
-        const log = JSON.parse(localStorage.getItem('weight_log')) || [];
-        const data = log.slice(-10);
-        if(chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: data.map(d => d.date.slice(5)), 
-                datasets: [{
-                    data: data.map(d => d.weight),
-                    borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor:'#064e3b'
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
-        });
-    }
-}
-
-// 6. TRAINING ENGINE
-function startWorkout(type) {
+// 5. TRAINING ENGINE
+function startWorkout(id) {
     if(audioCtx.state === 'suspended') audioCtx.resume();
-    const t = DB.templates[type];
+    const t = ROUTINES[id]; currentRoutineId = id;
     document.getElementById('active-title').innerText = t.title;
-    
-    // HTML GENERADO CON CLASES CORRECTAS PARA CHECKBOX
-    document.getElementById('warmup-items').innerHTML = DB.warmup.map(w => 
-        `<label class="warmup-item">
-            <span>${w}</span>
-            <input type="checkbox" class="native-check">
-        </label>`
-    ).join('');
-
+    document.getElementById('warmup-items').innerHTML = WARMUP.map(w => `<label class="warmup-item"><span>${w}</span><input type="checkbox" class="native-check"></label>`).join('');
     const c = document.getElementById('workout-container'); c.innerHTML = '';
     t.exercises.forEach(ex => {
-        let head = '';
+        let head = '', btnTxt = ex.type==='time' ? '+ Tiempo' : '+ Set';
         if(ex.type==='weighted') head = `<div class="sets-header grid-weighted"><span>#</span><span>KG</span><span>REPS</span><span>OK</span></div>`;
         else head = `<div class="sets-header grid-simple"><span>#</span><span>${ex.type==='time'?'TIEMPO':'REPS'}</span><span>OK</span></div>`;
-        
-        let btnTxt = ex.type==='time' ? '+ Tiempo' : '+ Set';
-
-        c.innerHTML += `
-        <div class="card ex-card" data-n="${ex.name}" data-t="${ex.type}">
-            <div class="flex-between">
-                <div><strong style="font-size:16px">${ex.name}</strong><div style="font-size:11px;color:var(--warning);margin-top:4px">${ex.note}</div></div>
-                <button class="btn small" onclick="addSet(this, '${ex.type}')">${btnTxt}</button>
-            </div>
-            <div style="margin-top:15px">${head}<div class="sets"></div></div>
-        </div>`;
+        c.innerHTML += `<div class="card ex-card" data-n="${ex.name}" data-t="${ex.type}"><div class="flex-between"><div><strong style="font-size:16px">${ex.name}</strong><div style="font-size:11px;color:var(--warning);margin-top:4px">${ex.note}</div></div><button class="btn small" onclick="addSet(this, '${ex.type}')">${btnTxt}</button></div><div style="margin-top:15px">${head}<div class="sets"></div></div></div>`;
     });
     go('training');
 }
-
 function addSet(btn, type) {
-    const sets = btn.parentElement.nextElementSibling.querySelector('.sets');
-    const n = sets.children.length + 1;
-    const div = document.createElement('div');
-    
-    let inputs = '';
-    let gridClass = '';
-    
-    if(type === 'weighted') {
-        gridClass = 'set-row weighted grid-weighted';
-        inputs = `<input type="number" placeholder="kg" class="val-kg"><input type="number" placeholder="reps" class="val-reps">`;
-    } else {
-        gridClass = 'set-row body grid-simple';
-        inputs = `<input type="${type==='time'?'text':'number'}" placeholder="${type==='time'?'30s':'Reps'}" class="val-reps">`;
-    }
-    
-    div.className = gridClass;
-    div.innerHTML = `<span class="set-num">${n}</span>${inputs}<div class="check-btn" onclick="toggleCheck(this)"><i class="ri-check-line"></i></div>`;
-    sets.appendChild(div);
+    const w=btn.parentElement.nextElementSibling.querySelector('.sets'), n=w.children.length+1, d=document.createElement('div');
+    let inp=type==='weighted'?`<input type="number" placeholder="kg" class="val-kg"><input type="number" placeholder="reps" class="val-reps">`:`<input type="${type==='time'?'text':'number'}" placeholder="${type==='time'?'30s':'Reps'}" class="val-reps">`;
+    d.className=`set-row ${type} ${type==='weighted'?'grid-weighted':'grid-simple'}`; 
+    d.innerHTML=`<span class="set-num">${n}</span>${inp}<div class="check-btn" onclick="toggleCheck(this)"><i class="ri-check-line"></i></div>`;
+    w.appendChild(d);
 }
-
 function toggleCheck(el) {
-    el.classList.toggle('checked');
-    const inputs = el.parentElement.querySelectorAll('input');
-    if(el.classList.contains('checked')) {
-        inputs.forEach(i => i.style.opacity = 0.5);
-        startTimer(90);
-    } else {
-        inputs.forEach(i => i.style.opacity = 1);
-    }
+    el.classList.toggle('checked'); const i=el.parentElement.querySelectorAll('input');
+    if(el.classList.contains('checked')){i.forEach(x=>x.style.opacity=0.5);startTimer(90);}else i.forEach(x=>x.style.opacity=1);
 }
-
-// 7. SAVE & PESO
 function finishWorkout() {
-    if(!confirm("¿Guardar entrenamiento?")) return;
-    stopTimer();
-    const title = document.getElementById('active-title').innerText;
-    const isoDate = getLocalISO();
-    const prettyDate = new Date().toLocaleDateString('es-ES', {weekday:'short', day:'numeric'});
-    
-    // CAPTURAR CALENTAMIENTO
+    if(!confirm("¿Guardar?")) return; stopTimer();
+    const title = document.getElementById('active-title').innerText, isoDate = getLocalISO(), prettyDate = new Date().toLocaleDateString('es-ES', {weekday:'short', day:'numeric'});
     const warmChecks = Array.from(document.querySelectorAll('.native-check')).map(c => c.checked ? '☑' : '☐').join(' ');
     const warmText = warmChecks.includes('☑') ? "Calentamiento Realizado" : "Sin Calentar";
-
     const session = { id:Date.now(), title, isoDate, date:prettyDate, warmup: warmText, data:[], synced:false };
-    
     document.querySelectorAll('.ex-card').forEach(card => {
         let sets = [];
         card.querySelectorAll('.set-row').forEach(row => {
-            if(row.querySelector('.check-btn').classList.contains('checked')) {
-                sets.push({
-                    kg: row.querySelector('.val-kg')?.value || '-',
-                    reps: row.querySelector('.val-reps')?.value || '-'
-                });
-            }
+            if(row.querySelector('.check-btn').classList.contains('checked')) sets.push({ kg: row.querySelector('.val-kg')?.value || '-', reps: row.querySelector('.val-reps')?.value || '-' });
         });
         if(sets.length) session.data.push({ name: card.dataset.n, type: card.dataset.t, sets });
     });
-
-    if(!session.data.length) return alert("Anota algo primero");
-    
-    const h = JSON.parse(localStorage.getItem('pro_tracker_db')) || [];
-    h.push(session);
-    localStorage.setItem('pro_tracker_db', JSON.stringify(h));
-    
-    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-    renderStats(); go('home'); forceSync();
+    if(!session.data.length) return alert("Vacio");
+    const h = JSON.parse(localStorage.getItem('pro_tracker_db')) || []; h.push(session); localStorage.setItem('pro_tracker_db', JSON.stringify(h));
+    confetti(); renderStats(); go('home'); forceSync();
 }
 
+// 6. COMMON
 function saveBodyWeight() {
-    const val = parseFloat(document.getElementById('input-bodyweight').value);
-    if(!val) return;
-    localStorage.setItem('user_weight_current', val);
-    localStorage.setItem('user_weight_date', new Date().toLocaleDateString('es-ES',{day:'numeric',month:'short'}));
-    
-    const log = JSON.parse(localStorage.getItem('weight_log')) || [];
-    log.push({ date: getLocalISO(), weight: val, synced: false });
-    localStorage.setItem('weight_log', JSON.stringify(log));
-    
-    document.getElementById('input-bodyweight').value = '';
-    renderStats(); forceSync();
+    const v = parseFloat(document.getElementById('input-bodyweight').value); if(!v) return;
+    localStorage.setItem('user_weight_current', v); localStorage.setItem('user_weight_date', new Date().toLocaleDateString('es-ES',{day:'numeric',month:'short'}));
+    const l = JSON.parse(localStorage.getItem('weight_log')) || []; l.push({ date: getLocalISO(), weight: v, synced: false }); localStorage.setItem('weight_log', JSON.stringify(l));
+    document.getElementById('input-bodyweight').value = ''; renderStats(); forceSync();
 }
+let timerI=null,secL=0; function startTimer(s){stopTimer();secL=s;document.getElementById('rest-timer').classList.remove('hidden');ut();timerI=setInterval(()=>{secL--;ut();if(secL<=0){stopTimer();playBeep();}},1000);} function stopTimer(){clearInterval(timerI);document.getElementById('rest-timer').classList.add('hidden');} function addTime(s){secL+=s;ut();} function ut(){const m=Math.floor(secL/60).toString().padStart(2,'0'),s=(secL%60).toString().padStart(2,'0');document.getElementById('timer-countdown').innerText=`${m}:${s}`;} function playBeep(){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=800;g.gain.value=0.1;o.start();setTimeout(()=>o.stop(),200);}
+let chart=null; function renderStats(){const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[];document.getElementById('total-sessions').innerText=h.length;const w=localStorage.getItem('user_weight_current');if(w){document.getElementById('current-weight-display').innerText=w+' kg';document.getElementById('last-weight-date').innerText=localStorage.getItem('user_weight_date');}const p=h.some(x=>!x.synced)||(JSON.parse(localStorage.getItem('weight_log'))||[]).some(x=>!x.synced);updateSyncUI(p?'pending':'synced');const ctx=document.getElementById('weightChart');if(ctx){const l=JSON.parse(localStorage.getItem('weight_log'))||[],d=l.slice(-10);if(chart)chart.destroy();chart=new Chart(ctx,{type:'line',data:{labels:d.map(x=>x.date.slice(5)),datasets:[{data:d.map(x=>x.weight),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',borderWidth:3,tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#064e3b'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});}}
+function renderCalendar(){const y=currentDate.getFullYear(),m=currentDate.getMonth();document.getElementById('cal-month-year').innerText=`${["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m]} ${y}`;const c=document.getElementById('cal-days-container');c.innerHTML='';const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[], dates=h.map(x=>x.isoDate);const fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),today=getLocalISO();for(let i=0;i<fd;i++)c.innerHTML+=`<div class="cal-day" style="opacity:0"></div>`;for(let d=1;d<=dim;d++){const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;let cls=iso===today?'today':iso===selectedDateISO?'selected':'';if(dates.includes(iso))cls+=' has-workout';c.innerHTML+=`<div class="cal-day ${cls}" onclick="selectDate('${iso}')">${d}</div>`;}}
+function changeMonth(d){currentDate.setMonth(currentDate.getMonth()+d);renderCalendar();} function selectDate(iso){selectedDateISO=iso;renderCalendar();renderHistoryList(iso);}
+async function deleteItem(id) { if(!confirm("¿Borrar?")) return; let h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[]; h=h.filter(x=>x.id!==id); localStorage.setItem('pro_tracker_db',JSON.stringify(h)); renderCalendar(); renderHistoryList(selectedDateISO); renderStats(); if(navigator.onLine && !API_URL.includes("GOOGLE")) { try { await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'delete_workout',id:id})}); } catch(e){} } }
+function renderHistoryList(iso){const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[],list=document.getElementById('history-list');list.innerHTML='';const [y,m,d]=iso.split('-');document.getElementById('history-date-title').innerText=`Actividad ${d}/${m}`;const items=h.filter(x=>x.isoDate===iso).reverse();if(!items.length){list.innerHTML='<div style="text-align:center;color:#64748b;padding:20px">Nada este día</div>';return;}items.forEach(s=>{let details='';if(s.warmup)details+=`<div style="font-size:11px;color:#fbbf24;margin-bottom:8px">🔥 ${s.warmup}</div>`;s.data.forEach(ex=>{details+=`<div style="margin-top:10px"><div class="hist-ex-title">${ex.name}</div>`;ex.sets.forEach((set,i)=>{let inf=ex.type==='weighted'?`${set.kg}kg × ${set.reps}`:ex.type==='time'?`${set.reps}`:`${set.reps} reps`;details+=`<div class="hist-set-row"><span class="hist-set-num">Set ${i+1}</span><span style="color:white;font-weight:600">${inf}</span></div>`;});details+=`</div>`;});const icon=s.synced?'<i class="ri-cloud-check-line" style="color:#34d399"></i>':'<i class="ri-upload-cloud-line" style="color:#fbbf24"></i>';list.innerHTML+=`<div class="card"><div class="flex-between" style="margin-bottom:5px;border-bottom:1px solid #334155;padding-bottom:8px"><strong>${s.title}</strong><div style="display:flex;gap:10px;align-items:center">${icon} <button onclick="deleteItem(${s.id})" style="background:none;border:none;color:#f87171;padding:0"><i class="ri-delete-bin-line" style="font-size:18px"></i></button></div></div>${details}</div>`;});}
+function cancelWorkout(){if(confirm("¿Salir?"))go('home');} function resetApp(){if(confirm("¿Reset total?")){localStorage.clear();location.reload();}}
 
-// 8. TIMER & CALENDAR
-let timerI = null, secL = 0;
-function startTimer(s) { stopTimer(); secL = s; document.getElementById('rest-timer').classList.remove('hidden'); updT(); timerI = setInterval(()=>{ secL--; updT(); if(secL<=0){stopTimer(); playBeep(); if(navigator.vibrate)navigator.vibrate(200);} }, 1000); }
-function stopTimer() { clearInterval(timerI); document.getElementById('rest-timer').classList.add('hidden'); }
-function addTime(s) { secL+=s; updT(); }
-function updT() { document.getElementById('timer-countdown').innerText = `${Math.floor(secL/60).toString().padStart(2,'0')}:${(secL%60).toString().padStart(2,'0')}`; }
-function playBeep() { const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=800; g.gain.value=0.1; o.start(); setTimeout(()=>o.stop(),200); }
-
-function renderCalendar() {
-    const y = currentDate.getFullYear(), m = currentDate.getMonth();
-    const names = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-    document.getElementById('cal-month-year').innerText = `${names[m]} ${y}`;
-    
-    const c = document.getElementById('cal-days-container'); c.innerHTML = '';
-    const h = JSON.parse(localStorage.getItem('pro_tracker_db')) || [];
-    const dates = h.map(x => x.isoDate);
-    const fd = new Date(y, m, 1).getDay();
-    const dim = new Date(y, m+1, 0).getDate();
-    const today = getLocalISO();
-
-    for(let i=0; i<fd; i++) c.innerHTML += `<div class="cal-day" style="opacity:0"></div>`;
-    for(let d=1; d<=dim; d++) {
-        const iso = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        let cls = iso === today ? 'today' : iso === selectedDateISO ? 'selected' : '';
-        if(dates.includes(iso)) cls += ' has-workout';
-        
-        const el = document.createElement('div'); el.className = `cal-day ${cls}`; el.innerText = d;
-        el.onclick = () => { selectedDateISO = iso; renderCalendar(); renderHistoryList(iso); };
-        c.appendChild(el);
-    }
-}
-function changeMonth(d) { currentDate.setMonth(currentDate.getMonth()+d); renderCalendar(); }
-
-// 9. HISTORIAL DETALLADO
-function renderHistoryList(iso) {
-    const h = JSON.parse(localStorage.getItem('pro_tracker_db')) || [];
-    const list = document.getElementById('history-list'); list.innerHTML = '';
-    
-    const [y,m,d] = iso.split('-');
-    document.getElementById('history-date-title').innerText = `Actividad del ${d}/${m}`;
-    
-    const items = h.filter(x => x.isoDate === iso).reverse();
-    
-    if(!items.length) { list.innerHTML = '<div style="text-align:center;color:#64748b;padding:20px">Nada este día</div>'; return; }
-    
-    items.forEach(s => {
-        let details = '';
-        if(s.warmup) details += `<div style="font-size:11px; color:#fbbf24; margin-bottom:8px">🔥 ${s.warmup}</div>`;
-
-        s.data.forEach(ex => {
-            details += `<div style="margin-top:10px">
-                <div class="hist-ex-title">${ex.name}</div>`;
-            
-            ex.sets.forEach((set, idx) => {
-                let info = '';
-                if(ex.type === 'weighted') info = `${set.kg} kg × ${set.reps} reps`;
-                else if(ex.type === 'body') info = `${set.reps} reps`;
-                else info = `${set.reps}`; // tiempo
-                
-                details += `<div class="hist-set-row">
-                    <span class="hist-set-num">Set ${idx+1}</span>
-                    <span style="color:white; font-weight:600">${info}</span>
-                </div>`;
-            });
-            details += `</div>`;
-        });
-
-        const icon = s.synced ? '<i class="ri-cloud-check-line" style="color:#34d399"></i>' : '<i class="ri-upload-cloud-line" style="color:#fbbf24"></i>';
-
-        list.innerHTML += `
-        <div class="card">
-            <div class="flex-between" style="margin-bottom:5px; border-bottom:1px solid #334155; padding-bottom:8px">
-                <strong>${s.title}</strong>
-                <div style="display:flex;gap:10px;align-items:center">
-                    ${icon}
-                    <button onclick="deleteItem(${s.id})" style="background:none;border:none;color:#f87171;padding:0"><i class="ri-delete-bin-line" style="font-size:18px"></i></button>
-                </div>
-            </div>
-            ${details}
-        </div>`;
-    });
-}
-
-function cancelWorkout() { if(confirm("¿Salir?")) go('home'); }
-function resetApp() { if(confirm("¿Borrar TODOS los datos?")) { localStorage.clear(); location.reload(); } }
-
-// Init
-renderStats();
+renderStats(); renderRoutinesHome();
 </script>
 </body>
 </html>
