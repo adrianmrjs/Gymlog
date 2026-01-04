@@ -5,15 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Pro Tracker Elite</title>
+<meta name="apple-mobile-web-app-title" content="GYMLOG">
+<title>GYMLOG</title>
 
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
-
-
-<link rel="apple-touch-icon" href="img/logo.png">  <link rel="icon" type="image/png" href="img/logo.png">
 
 <style>
 /* --- 1. VARIABLES & RESET --- */
@@ -62,10 +60,14 @@ small { color: var(--text-muted); font-size: 12px; }
     width: 100%; transition: transform 0.1s; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 .btn:active { transform: scale(0.97); }
-.btn.icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; background: rgba(255,255,255,0.05); box-shadow: none; color: white; }
+.btn.icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; background: rgba(255,255,255,0.05); box-shadow: none; color: white; border: none; display: flex; align-items: center; justify-content: center;}
 .btn.small { padding: 8px 12px; font-size: 12px; width: auto; background: transparent; border: 1px dashed var(--surface-hover); color: var(--primary); box-shadow: none; }
 .btn.text { background: none; box-shadow: none; padding: 8px; width: auto; color: var(--text-muted); font-size: 14px; }
 .btn.danger { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); box-shadow: none; }
+
+/* Boton de acción principal (Verde) */
+.btn.action-green { background: var(--success); color: #022c22; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
+.btn.action-green i { font-size: 24px; font-weight: bold; }
 
 /* Tarjetas */
 .card { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.03); }
@@ -108,9 +110,13 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 .sync-badge.error { background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
 .sync-spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }
 
-.screen { display: none; padding: 20px; animation: fadeIn 0.3s; }
+/* ⚠️ ARREGLO DE ANIMACIÓN PARA EVITAR SALTO DE MENÚ ⚠️ */
+.screen { display: none; padding: 20px; animation: fadeIn 0.2s ease-in-out; }
 .screen.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { 
+    from { opacity: 0; } 
+    to { opacity: 1; } 
+}
 
 /* Timer */
 .timer-float { position: fixed; bottom: calc(90px + var(--safe-area-bottom)); right: 20px; left: 20px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 200; }
@@ -132,10 +138,34 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 .editor-item-card { margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); }
 .editor-input-group { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; margin-bottom: 8px; }
 
-/* Nav */
-.nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 440px; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(12px); border-radius: 24px; padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 1000; }
+/* --- NAVEGACIÓN --- */
+
+/* Nav Principal (Flotante) */
+.nav { 
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+    width: 90%; max-width: 440px; 
+    background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(12px); 
+    border-radius: 24px; padding: 12px 40px; 
+    display: flex; justify-content: space-between; align-items: center; 
+    border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+    z-index: 1000; 
+}
 .nav-item { background: none; border: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
 .nav-item.active { color: var(--primary); } .nav-item i { font-size: 22px; }
+
+/* BARRA DE ACCIÓN INFERIOR (Fixed & Centrada) */
+.bottom-action-bar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: var(--app-width); /* Mismo ancho que la app */
+    background: rgba(15, 23, 42, 0.98); 
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 25px;
+    padding-bottom: calc(12px + var(--safe-area-bottom));
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 1000;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+}
 </style>
 </head>
 <body>
@@ -167,16 +197,13 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:15px">
             <div class="card" style="margin:0; padding:12px; text-align:center">
-                <div id="current-weight-display" style="color:var(--success);font-weight:800;font-size:16px">--</div>
-                <small>Peso</small>
+                <div id="current-weight-display" style="color:var(--success);font-weight:800;font-size:16px">--</div><small>Peso</small>
             </div>
             <div class="card" style="margin:0; padding:12px; text-align:center">
-                <div style="color:white;font-weight:800;font-size:16px">78 kg</div>
-                <small>Meta</small>
+                <div style="color:white;font-weight:800;font-size:16px">78 kg</div><small>Meta</small>
             </div>
             <div class="card" style="margin:0; padding:12px; text-align:center">
-                <div id="total-sessions" style="color:var(--primary);font-weight:800;font-size:16px">0</div>
-                <small>Sesiones</small>
+                <div id="total-sessions" style="color:var(--primary);font-weight:800;font-size:16px">0</div><small>Sesiones</small>
             </div>
         </div>
 
@@ -197,26 +224,23 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
             <button class="btn small" onclick="go('editor')" style="border:none; color:var(--primary)"><i class="ri-edit-box-line"></i> Editar</button>
         </div>
         <div id="routines-list"></div>
-        
         <button class="btn text" onclick="resetApp()" style="margin: 30px auto; display:block; font-size:12px; opacity:0.5">Resetear App</button>
     </div>
 
-    <div id="training" class="screen" style="padding-bottom:40px">
-        <div style="position:sticky; top:0; background:var(--bg-app); padding:15px 0; z-index:10; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05)">
-            <button class="btn icon" onclick="cancelWorkout()"><i class="ri-arrow-left-line"></i></button>
-            <h2 id="active-title">Rutina</h2>
-            <div style="width:40px"></div>
-        </div>
-
-        <div class="card" style="margin-top:20px; border-left:3px solid var(--warning); background:rgba(245,158,11,0.05)">
+    <div id="training" class="screen" style="padding-bottom:100px; padding-top:20px">
+        <h2 id="active-title" style="text-align:center; margin-bottom:20px; font-size:20px;">Rutina</h2>
+        <div class="card" style="border-left:3px solid var(--warning); background:rgba(245,158,11,0.05)">
             <div class="flex-between" onclick="document.getElementById('warmup-items').classList.toggle('hidden')" style="cursor:pointer">
                 <strong>🔥 Calentamiento</strong> <i class="ri-arrow-down-s-line"></i>
             </div>
             <div id="warmup-items" class="hidden" style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.1)"></div>
         </div>
-
         <div id="workout-container"></div>
-        <button class="btn" style="margin-top:30px; background:white; color:black" onclick="finishWorkout()">Finalizar Entrenamiento</button>
+        
+        <div class="bottom-action-bar">
+            <button class="btn icon" style="width:50px; height:50px; background:rgba(255,255,255,0.1);" onclick="cancelWorkout()"><i class="ri-arrow-left-line" style="font-size:24px;"></i></button>
+            <button class="btn icon action-green" style="width:60px; height:60px;" onclick="finishWorkout()"><i class="ri-check-double-line"></i></button>
+        </div>
     </div>
 
     <div id="history" class="screen">
@@ -226,7 +250,6 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
                 <i id="cloud-icon" class="ri-cloud-download-line"></i> <span id="cloud-text">Cargar Nube</span>
             </button>
         </div>
-
         <div class="calendar-wrapper card">
             <div class="cal-header">
                 <button class="btn text" onclick="changeMonth(-1)"><i class="ri-arrow-left-s-line"></i></button>
@@ -238,34 +261,36 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
                 <div id="cal-days-container" style="display:contents"></div>
             </div>
         </div>
-
         <h3 id="history-date-title" style="margin:20px 0 10px; color:var(--primary)">Actividad</h3>
         <div id="history-list"></div>
     </div>
 
-    <div id="editor" class="screen" style="padding-bottom:40px">
-        <div class="flex-between" style="margin-bottom:20px">
-            <button class="btn icon" onclick="go('home')"><i class="ri-arrow-left-line"></i></button>
-            <h2>Editor Rutinas</h2>
-            <button class="btn icon" onclick="createNewRoutine()" style="color:var(--success)"><i class="ri-add-line"></i></button>
-        </div>
+    <div id="editor" class="screen" style="padding-bottom:100px; padding-top:20px">
+        <h2 style="text-align:center; margin-bottom:20px;">Editor Rutinas</h2>
         <div id="editor-list"></div>
+        
+        <div class="bottom-action-bar">
+            <button class="btn icon" style="width:50px; height:50px; background:rgba(255,255,255,0.1);" onclick="go('home')"><i class="ri-home-5-line" style="font-size:24px;"></i></button>
+            <button class="btn icon action-green" style="width:60px; height:60px;" onclick="createNewRoutine()"><i class="ri-add-line"></i></button>
+        </div>
     </div>
 
-    <div id="editor-detail" class="screen" style="padding-bottom:40px">
-        <div style="position:sticky; top:0; background:var(--bg-app); padding:15px 0; z-index:10; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05)">
-            <button class="btn icon" onclick="go('editor')"><i class="ri-arrow-left-line"></i></button>
-            <input type="text" id="routine-title-input" placeholder="Nombre Rutina" style="background:transparent; border:none; font-size:18px; font-weight:700; text-align:center; color:white; width:60%">
-            <button class="btn icon" onclick="saveRoutineDetail()" style="color:var(--success)"><i class="ri-save-line"></i></button>
+    <div id="editor-detail" class="screen" style="padding-bottom:100px; padding-top:20px">
+        <div style="text-align:center; margin-bottom:10px;">
+            <input type="text" id="routine-title-input" placeholder="Nombre Rutina" style="background:transparent; border:none; font-size:20px; font-weight:700; text-align:center; color:white; width:80%">
         </div>
-        
-        <div style="text-align:center; padding:10px 0;">
-            <input type="text" id="routine-tag-input" placeholder="Etiqueta (ej: Lun/Vie)" style="background:rgba(255,255,255,0.05); border:none; border-radius:20px; font-size:12px; padding:6px 12px; width:50%; color:#60a5fa;">
+        <div style="text-align:center; padding-bottom:10px;">
+            <input type="text" id="routine-tag-input" placeholder="Etiqueta (ej: Lun/Vie)" style="background:rgba(255,255,255,0.05); border:none; border-radius:20px; font-size:12px; padding:6px 12px; width:50%; color:#60a5fa; text-align:center">
         </div>
 
         <div id="routine-exercises-list" style="margin-top:20px"></div>
         <button class="btn small" onclick="addExerciseInput()" style="margin:20px auto; display:block; width:auto; border-color:var(--primary); color:var(--primary)">+ Agregar Ejercicio</button>
         <button class="btn danger" id="delete-routine-btn" style="margin-top:40px">Eliminar Rutina</button>
+
+        <div class="bottom-action-bar">
+            <button class="btn icon" style="width:50px; height:50px; background:rgba(255,255,255,0.1);" onclick="go('editor')"><i class="ri-arrow-left-line" style="font-size:24px;"></i></button>
+            <button class="btn icon action-green" style="width:60px; height:60px;" onclick="saveRoutineDetail()"><i class="ri-save-line"></i></button>
+        </div>
     </div>
 
     <nav id="navbar" class="nav">
