@@ -345,7 +345,7 @@ async function forceSync() {
 }
 async function downloadData(){await forceSync();alert("Datos actualizados");}
 
-// 4. EDITOR RUTINAS (MODIFICADO)
+// 4. EDITOR RUTINAS
 function renderRoutinesHome() {
     const c = document.getElementById('routines-list'); c.innerHTML = '';
     Object.keys(ROUTINES).forEach(id => {
@@ -363,7 +363,7 @@ function createNewRoutine() { currentRoutineId = 'custom_' + Date.now(); ROUTINE
 function editRoutine(id) {
     currentRoutineId = id; const r = ROUTINES[id];
     document.getElementById('routine-title-input').value = r.title;
-    document.getElementById('routine-tag-input').value = r.tag || ""; // Cargar la etiqueta
+    document.getElementById('routine-tag-input').value = r.tag || "";
     const list = document.getElementById('routine-exercises-list'); list.innerHTML = '';
     r.exercises.forEach(ex => addExerciseInput(ex));
     const delBtn = document.getElementById('delete-routine-btn');
@@ -379,20 +379,20 @@ function addExerciseInput(ex = null) {
 }
 function saveRoutineDetail() {
     const title = document.getElementById('routine-title-input').value.trim(); if(!title) return alert("Ponle nombre");
-    const tag = document.getElementById('routine-tag-input').value.trim(); // Guardar etiqueta
+    const tag = document.getElementById('routine-tag-input').value.trim();
     const exercises = [];
     document.querySelectorAll('.editor-item-card').forEach(card => {
         const name = card.querySelector('.ex-name').value.trim();
         if(name) exercises.push({ name, type: card.querySelector('.ex-type').value, note: card.querySelector('.ex-note').value.trim() });
     });
     if(!exercises.length) return alert("Agrega ejercicios");
-    ROUTINES[currentRoutineId] = { title, tag, exercises }; // Guardar en el objeto
+    ROUTINES[currentRoutineId] = { title, tag, exercises }; 
     localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES));
     go('editor');
     updateSyncUI('pending');
 }
 function deleteRoutine(id) { 
-    if(confirm("¿Eliminar?")) { delete ROUTINES[id]; localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES)); go('editor'); updateSyncUI('pending'); }
+    delete ROUTINES[id]; localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES)); go('editor'); updateSyncUI('pending'); 
 }
 
 // 5. TRAINING ENGINE
@@ -422,7 +422,7 @@ function toggleCheck(el) {
     if(el.classList.contains('checked')){i.forEach(x=>x.style.opacity=0.5);startTimer(90);}else i.forEach(x=>x.style.opacity=1);
 }
 function finishWorkout() {
-    if(!confirm("¿Guardar?")) return; stopTimer();
+    stopTimer();
     const title = document.getElementById('active-title').innerText, isoDate = getLocalISO(), prettyDate = new Date().toLocaleDateString('es-ES', {weekday:'short', day:'numeric'});
     const warmChecks = Array.from(document.querySelectorAll('.native-check')).map(c => c.checked ? '☑' : '☐').join(' ');
     const warmText = warmChecks.includes('☑') ? "Calentamiento Realizado" : "Sin Calentar";
@@ -450,9 +450,9 @@ let timerI=null,secL=0; function startTimer(s){stopTimer();secL=s;document.getEl
 let chart=null; function renderStats(){const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[];document.getElementById('total-sessions').innerText=h.length;const w=localStorage.getItem('user_weight_current');if(w){document.getElementById('current-weight-display').innerText=w+' kg';document.getElementById('last-weight-date').innerText=localStorage.getItem('user_weight_date');}const p=h.some(x=>!x.synced)||(JSON.parse(localStorage.getItem('weight_log'))||[]).some(x=>!x.synced);updateSyncUI(p?'pending':'synced');const ctx=document.getElementById('weightChart');if(ctx){const l=JSON.parse(localStorage.getItem('weight_log'))||[],d=l.slice(-10);if(chart)chart.destroy();chart=new Chart(ctx,{type:'line',data:{labels:d.map(x=>x.date.slice(5)),datasets:[{data:d.map(x=>x.weight),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',borderWidth:3,tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#064e3b'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});}}
 function renderCalendar(){const y=currentDate.getFullYear(),m=currentDate.getMonth();document.getElementById('cal-month-year').innerText=`${["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m]} ${y}`;const c=document.getElementById('cal-days-container');c.innerHTML='';const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[], dates=h.map(x=>x.isoDate);const fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),today=getLocalISO();for(let i=0;i<fd;i++)c.innerHTML+=`<div class="cal-day" style="opacity:0"></div>`;for(let d=1;d<=dim;d++){const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;let cls=iso===today?'today':iso===selectedDateISO?'selected':'';if(dates.includes(iso))cls+=' has-workout';c.innerHTML+=`<div class="cal-day ${cls}" onclick="selectDate('${iso}')">${d}</div>`;}}
 function changeMonth(d){currentDate.setMonth(currentDate.getMonth()+d);renderCalendar();} function selectDate(iso){selectedDateISO=iso;renderCalendar();renderHistoryList(iso);}
-async function deleteItem(id) { if(!confirm("¿Borrar?")) return; let h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[]; h=h.filter(x=>x.id!==id); localStorage.setItem('pro_tracker_db',JSON.stringify(h)); renderCalendar(); renderHistoryList(selectedDateISO); renderStats(); if(navigator.onLine && !API_URL.includes("GOOGLE")) { try { await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'delete_workout',id:id})}); } catch(e){} } }
+async function deleteItem(id) { let h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[]; h=h.filter(x=>x.id!==id); localStorage.setItem('pro_tracker_db',JSON.stringify(h)); renderCalendar(); renderHistoryList(selectedDateISO); renderStats(); if(navigator.onLine && !API_URL.includes("GOOGLE")) { try { await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'delete_workout',id:id})}); } catch(e){} } }
 function renderHistoryList(iso){const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[],list=document.getElementById('history-list');list.innerHTML='';const [y,m,d]=iso.split('-');document.getElementById('history-date-title').innerText=`Actividad ${d}/${m}`;const items=h.filter(x=>x.isoDate===iso).reverse();if(!items.length){list.innerHTML='<div style="text-align:center;color:#64748b;padding:20px">Nada este día</div>';return;}items.forEach(s=>{let details='';if(s.warmup)details+=`<div style="font-size:11px;color:#fbbf24;margin-bottom:8px">🔥 ${s.warmup}</div>`;s.data.forEach(ex=>{details+=`<div style="margin-top:10px"><div class="hist-ex-title">${ex.name}</div>`;ex.sets.forEach((set,i)=>{let inf=ex.type==='weighted'?`${set.kg}kg × ${set.reps}`:ex.type==='time'?`${set.reps}`:`${set.reps} reps`;details+=`<div class="hist-set-row"><span class="hist-set-num">Set ${i+1}</span><span style="color:white;font-weight:600">${inf}</span></div>`;});details+=`</div>`;});const icon=s.synced?'<i class="ri-cloud-check-line" style="color:#34d399"></i>':'<i class="ri-upload-cloud-line" style="color:#fbbf24"></i>';list.innerHTML+=`<div class="card"><div class="flex-between" style="margin-bottom:5px;border-bottom:1px solid #334155;padding-bottom:8px"><strong>${s.title}</strong><div style="display:flex;gap:10px;align-items:center">${icon} <button onclick="deleteItem(${s.id})" style="background:none;border:none;color:#f87171;padding:0"><i class="ri-delete-bin-line" style="font-size:18px"></i></button></div></div>${details}</div>`;});}
-function cancelWorkout(){if(confirm("¿Salir?"))go('home');} function resetApp(){if(confirm("¿Reset total?")){localStorage.clear();location.reload();}}
+function cancelWorkout(){go('home');} function resetApp(){localStorage.clear();location.reload();}
 
 renderStats(); renderRoutinesHome();
 </script>
