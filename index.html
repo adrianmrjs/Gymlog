@@ -4,8 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="GYMLOG">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" type="image/png" href="logo.png">
+
 <title>GYMLOG</title>
 
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
@@ -64,15 +70,13 @@ small { color: var(--text-muted); font-size: 12px; }
 .btn.small { padding: 8px 12px; font-size: 12px; width: auto; background: transparent; border: 1px dashed var(--surface-hover); color: var(--primary); box-shadow: none; }
 .btn.text { background: none; box-shadow: none; padding: 8px; width: auto; color: var(--text-muted); font-size: 14px; }
 .btn.danger { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); box-shadow: none; }
-
-/* Boton de acción principal (Verde) */
 .btn.action-green { background: var(--success); color: #022c22; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
 .btn.action-green i { font-size: 24px; font-weight: bold; }
 
 /* Tarjetas */
 .card { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.03); }
 
-/* --- 3. INPUTS & CHECKBOXES --- */
+/* Inputs */
 input[type="number"], input[type="text"], select { 
     background: #020617; border: 1px solid var(--surface-hover); color: white; 
     padding: 10px; border-radius: 8px; text-align: center; width: 100%; 
@@ -80,25 +84,23 @@ input[type="number"], input[type="text"], select {
 }
 input:focus, select:focus { border-color: var(--primary); }
 
-/* Checkbox Calentamiento */
+/* Checkbox */
 .warmup-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
 .warmup-item:last-child { border-bottom: none; }
 input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24px; margin: 0; accent-color: var(--success); cursor: pointer; }
-
-/* Checkbox Series */
 .check-btn { width: 100%; height: 42px; border-radius: 8px; background: #020617; border: 1px solid var(--surface-hover); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
 .check-btn.checked { background: var(--success); border-color: var(--success); }
 .check-btn i { opacity: 0; transform: scale(0.5); transition: 0.2s; color: #022c22; font-weight: bold; font-size: 20px; }
 .check-btn.checked i { opacity: 1; transform: scale(1); }
 
-/* --- 4. GRILLAS --- */
+/* Grillas */
 .sets-header { display: grid; gap: 8px; font-size: 10px; color: var(--text-muted); text-align: center; margin-bottom: 6px; font-weight: 700; padding: 0 2px; }
 .set-row { margin-bottom: 8px; align-items: center; display: grid; gap: 8px; }
 .grid-weighted { grid-template-columns: 30px 1fr 1fr 44px; }
 .grid-simple { grid-template-columns: 30px 1fr 44px; }
 .set-num { text-align: center; color: var(--text-muted); font-weight: 600; font-size: 12px; }
 
-/* --- 5. EXTRAS --- */
+/* Extras */
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .hidden { display: none !important; }
 .tag { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
@@ -110,15 +112,11 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 .sync-badge.error { background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
 .sync-spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* ⚠️ ARREGLO DE ANIMACIÓN PARA EVITAR SALTO DE MENÚ ⚠️ */
 .screen { display: none; padding: 20px; animation: fadeIn 0.2s ease-in-out; }
 .screen.active { display: block; }
-@keyframes fadeIn { 
-    from { opacity: 0; } 
-    to { opacity: 1; } 
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* Timer */
+/* Timer Float */
 .timer-float { position: fixed; bottom: calc(90px + var(--safe-area-bottom)); right: 20px; left: 20px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 200; }
 
 /* Calendario */
@@ -138,34 +136,13 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 .editor-item-card { margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); }
 .editor-input-group { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; margin-bottom: 8px; }
 
-/* --- NAVEGACIÓN --- */
-
-/* Nav Principal (Flotante) */
-.nav { 
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
-    width: 90%; max-width: 440px; 
-    background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(12px); 
-    border-radius: 24px; padding: 12px 40px; 
-    display: flex; justify-content: space-between; align-items: center; 
-    border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
-    z-index: 1000; 
-}
+/* Nav Principal */
+.nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 440px; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(12px); border-radius: 24px; padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 1000; }
 .nav-item { background: none; border: none; color: var(--text-muted); font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
 .nav-item.active { color: var(--primary); } .nav-item i { font-size: 22px; }
 
-/* BARRA DE ACCIÓN INFERIOR (Fixed & Centrada) */
-.bottom-action-bar {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 100%; max-width: var(--app-width); /* Mismo ancho que la app */
-    background: rgba(15, 23, 42, 0.98); 
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding: 12px 25px;
-    padding-bottom: calc(12px + var(--safe-area-bottom));
-    display: flex; justify-content: space-between; align-items: center;
-    z-index: 1000;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
-}
+/* Barra Inferior Acción */
+.bottom-action-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: var(--app-width); background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); padding: 12px 25px; padding-bottom: calc(12px + var(--safe-area-bottom)); display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.3); }
 </style>
 </head>
 <body>
@@ -300,6 +277,15 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 </div>
 
 <script>
+// --- REGISTRO DEL SERVICE WORKER (PWA) ---
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(reg => console.log('SW registrado', reg))
+            .catch(err => console.log('SW error', err));
+    });
+}
+
 // 1. DATA & DEFAULTS
 const DEFAULT_ROUTINES = {
     fuerzaA: { title: "Fuerza A (Full Body)", tag:"Lun/Vie", exercises: [{name:"Sentadilla",type:"body",note:"Peso corporal"},{name:"Press Pecho",type:"weighted",note:"Codos 45°"},{name:"Remo",type:"weighted",note:"Espalda recta"},{name:"Peso Muerto",type:"weighted",note:"Liviano"},{name:"Plancha",type:"time",note:"30-40 seg"}] },
