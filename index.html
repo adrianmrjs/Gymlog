@@ -103,6 +103,7 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 .hidden { display: none !important; }
 .tag { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .tag.blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.divider-title { margin: 20px 0 10px; font-size: 12px; color: var(--text-muted); letter-spacing: 1px; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid var(--surface-hover); padding-bottom: 5px; }
 
 /* Sync Badge */
 .sync-badge { background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid rgba(16, 185, 129, 0.3); }
@@ -171,7 +172,7 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 <body>
 
 <script>
-    // ⚠️ REEMPLAZA ESTO ⚠️
+    // ⚠️ REEMPLAZA ESTO CON TU URL DE GOOGLE APPS SCRIPT ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwcqHNwPq6JReM8BJMAvyhuo2JhsVrNJeDj64TQBplxpF6SDkFkvPeCiSAHz564OGqG/exec"; 
 </script>
 
@@ -283,8 +284,14 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
             <input type="text" id="routine-tag-input" placeholder="Etiqueta (ej: Lun/Vie)" style="background:rgba(255,255,255,0.05); border:none; border-radius:20px; font-size:12px; padding:6px 12px; width:50%; color:#60a5fa; text-align:center">
         </div>
 
-        <div id="routine-exercises-list" style="margin-top:20px"></div>
+        <div class="divider-title">🔥 Calentamiento</div>
+        <div id="editor-warmup-list"></div>
+        <button class="btn small" onclick="addWarmupInput()" style="margin:10px 0; width:auto; border-style:dashed; opacity:0.7">+ Agregar Item Calentamiento</button>
+
+        <div class="divider-title">💪 Ejercicios</div>
+        <div id="routine-exercises-list"></div>
         <button class="btn small" onclick="addExerciseInput()" style="margin:20px auto; display:block; width:auto; border-color:var(--primary); color:var(--primary)">+ Agregar Ejercicio</button>
+        
         <button class="btn danger" id="delete-routine-btn" style="margin-top:40px">Eliminar Rutina</button>
 
         <div class="bottom-action-bar">
@@ -301,13 +308,15 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 
 <script>
 // 1. DATA & DEFAULTS
+const DEFAULT_WARMUP_LIST = [""];
+// Ahora las rutinas incluyen su propia lista de 'warmup'
 const DEFAULT_ROUTINES = {
-    fuerzaA: { title: "Fuerza A (Full Body)", tag:"Lun/Vie", exercises: [{name:"Sentadilla",type:"body",note:"Peso corporal"},{name:"Press Pecho",type:"weighted",note:"Codos 45°"},{name:"Remo",type:"weighted",note:"Espalda recta"},{name:"Peso Muerto",type:"weighted",note:"Liviano"},{name:"Plancha",type:"time",note:"30-40 seg"}] },
-    fuerzaB: { title: "Fuerza B (Accesorios)", tag:"Miércoles", exercises: [{name:"Zancadas",type:"body",note:"10/pierna"},{name:"Hombros",type:"weighted",note:"Sentado"},{name:"Bíceps",type:"weighted",note:"Controlado"},{name:"Tríceps",type:"weighted",note:"Cerrado"}] },
-    cardio: { title: "Cardio + Movilidad", tag:"Mar/Jue", exercises: [{name:"Bici",type:"time",note:"Ritmo constante"},{name:"Estiramientos",type:"time",note:"Pecho/Espalda"}] }
+    fuerzaA: { title: "Fuerza A (Full Body)", tag:"Lun/Vie", warmup: [...DEFAULT_WARMUP_LIST], exercises: [{name:"Sentadilla",type:"body",note:"Peso corporal"},{name:"Press Pecho",type:"weighted",note:"Codos 45°"},{name:"Remo",type:"weighted",note:"Espalda recta"},{name:"Peso Muerto",type:"weighted",note:"Liviano"},{name:"Plancha",type:"time",note:"30-40 seg"}] },
+    fuerzaB: { title: "Fuerza B (Accesorios)", tag:"Miércoles", warmup: [...DEFAULT_WARMUP_LIST], exercises: [{name:"Zancadas",type:"body",note:"10/pierna"},{name:"Hombros",type:"weighted",note:"Sentado"},{name:"Bíceps",type:"weighted",note:"Controlado"},{name:"Tríceps",type:"weighted",note:"Cerrado"}] },
+    cardio: { title: "Cardio + Movilidad", tag:"Mar/Jue", warmup: ["Movilidad Dinámica", "5 min Bici Suave"], exercises: [{name:"Bici",type:"time",note:"Ritmo constante"},{name:"Estiramientos",type:"time",note:"Pecho/Espalda"}] }
 };
+
 let ROUTINES = JSON.parse(localStorage.getItem('pro_tracker_routines')) || DEFAULT_ROUTINES;
-const WARMUP = ["Movilidad Cuello", "Círculos Hombros", "Gato-Vaca", "Sentadillas Aire", "5 min suave"];
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let currentDate = new Date(), selectedDateISO = getLocalISO(), currentRoutineId = null;
 
@@ -387,17 +396,41 @@ function renderEditorList() {
         c.innerHTML += `<div class="card flex-between" onclick="editRoutine('${id}')"><strong>${ROUTINES[id].title}</strong><i class="ri-edit-2-line" style="color:var(--text-muted)"></i></div>`;
     });
 }
-function createNewRoutine() { currentRoutineId = 'custom_' + Date.now(); ROUTINES[currentRoutineId] = { title: "", tag:"", exercises: [] }; editRoutine(currentRoutineId); }
+
+// ⬇️ MODIFICADO: Ahora crea rutinas con warmup vacío []
+function createNewRoutine() { currentRoutineId = 'custom_' + Date.now(); ROUTINES[currentRoutineId] = { title: "", tag:"", warmup:[], exercises: [] }; editRoutine(currentRoutineId); }
+
 function editRoutine(id) {
     currentRoutineId = id; const r = ROUTINES[id];
     document.getElementById('routine-title-input').value = r.title;
     document.getElementById('routine-tag-input').value = r.tag || "";
+    
+    // Cargar Calentamiento
+    const wList = document.getElementById('editor-warmup-list'); wList.innerHTML = '';
+    
+    // Si la rutina no tiene warmup definido (versiones viejas), usa el default. Si tiene (aunque sea vacío), usa el suyo.
+    const warmups = r.warmup !== undefined ? r.warmup : DEFAULT_WARMUP_LIST;
+    
+    warmups.forEach(w => addWarmupInput(w));
+
+    // Cargar Ejercicios
     const list = document.getElementById('routine-exercises-list'); list.innerHTML = '';
     r.exercises.forEach(ex => addExerciseInput(ex));
+    
     const delBtn = document.getElementById('delete-routine-btn');
     delBtn.onclick = () => deleteRoutine(id); delBtn.style.display = Object.keys(ROUTINES).length > 1 ? 'block' : 'none';
     go('editor-detail');
 }
+
+function addWarmupInput(val = "") {
+    const div = document.createElement('div'); div.className = 'flex-between'; div.style.marginBottom = '8px';
+    div.innerHTML = `
+        <input type="text" class="warmup-val" value="${val}" placeholder="Actividad (ej: 5 min cinta)" style="text-align:left; background:rgba(255,255,255,0.03); border:none">
+        <button class="btn icon small" onclick="this.parentElement.remove()" style="color:#64748b; margin-left:8px"><i class="ri-close-line"></i></button>
+    `;
+    document.getElementById('editor-warmup-list').appendChild(div);
+}
+
 function addExerciseInput(ex = null) {
     const div = document.createElement('div'); div.className = 'card editor-item-card';
     div.innerHTML = `
@@ -405,20 +438,31 @@ function addExerciseInput(ex = null) {
         <div class="flex-between"><input type="text" placeholder="Nota (ej: Codos 45°)" class="ex-note" value="${ex?.note||''}" style="text-align:left; width:80%"><button class="btn icon small" onclick="this.closest('.editor-item-card').remove()" style="color:var(--danger)"><i class="ri-delete-bin-line"></i></button></div>`;
     document.getElementById('routine-exercises-list').appendChild(div);
 }
+
 function saveRoutineDetail() {
     const title = document.getElementById('routine-title-input').value.trim(); if(!title) return alert("Ponle nombre");
     const tag = document.getElementById('routine-tag-input').value.trim();
+    
+    // Guardar Warmups
+    const warmup = [];
+    document.querySelectorAll('.warmup-val').forEach(inp => {
+        if(inp.value.trim()) warmup.push(inp.value.trim());
+    });
+
+    // Guardar Ejercicios
     const exercises = [];
     document.querySelectorAll('.editor-item-card').forEach(card => {
         const name = card.querySelector('.ex-name').value.trim();
         if(name) exercises.push({ name, type: card.querySelector('.ex-type').value, note: card.querySelector('.ex-note').value.trim() });
     });
     if(!exercises.length) return alert("Agrega ejercicios");
-    ROUTINES[currentRoutineId] = { title, tag, exercises }; 
+
+    ROUTINES[currentRoutineId] = { title, tag, warmup, exercises }; 
     localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES));
     go('editor');
     updateSyncUI('pending');
 }
+
 function deleteRoutine(id) { 
     delete ROUTINES[id]; localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES)); go('editor'); updateSyncUI('pending'); 
 }
@@ -428,7 +472,17 @@ function startWorkout(id) {
     if(audioCtx.state === 'suspended') audioCtx.resume();
     const t = ROUTINES[id]; currentRoutineId = id;
     document.getElementById('active-title').innerText = t.title;
-    document.getElementById('warmup-items').innerHTML = WARMUP.map(w => `<label class="warmup-item"><span>${w}</span><input type="checkbox" class="native-check"></label>`).join('');
+    
+    // ⬇️ MODIFICADO: Respeta listas vacías []
+    const currentWarmup = t.warmup !== undefined ? t.warmup : DEFAULT_WARMUP_LIST;
+    
+    const wContainer = document.getElementById('warmup-items');
+    if (currentWarmup.length === 0) {
+        wContainer.innerHTML = '<div style="text-align:center; padding:10px; color:#64748b; font-size:12px">Sin calentamiento específico</div>';
+    } else {
+        wContainer.innerHTML = currentWarmup.map(w => `<label class="warmup-item"><span>${w}</span><input type="checkbox" class="native-check"></label>`).join('');
+    }
+    
     const c = document.getElementById('workout-container'); c.innerHTML = '';
     t.exercises.forEach(ex => {
         let head = '', btnTxt = ex.type==='time' ? '+ Tiempo' : '+ Set';
