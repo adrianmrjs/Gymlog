@@ -310,11 +310,7 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 // 1. DATA & DEFAULTS
 const DEFAULT_WARMUP_LIST = [""];
 // Ahora las rutinas incluyen su propia lista de 'warmup'
-const DEFAULT_ROUTINES = {
-    fuerzaA: { title: "Fuerza A (Full Body)", tag:"Lun/Vie", warmup: [...DEFAULT_WARMUP_LIST], exercises: [{name:"Sentadilla",type:"body",note:"Peso corporal"},{name:"Press Pecho",type:"weighted",note:"Codos 45°"},{name:"Remo",type:"weighted",note:"Espalda recta"},{name:"Peso Muerto",type:"weighted",note:"Liviano"},{name:"Plancha",type:"time",note:"30-40 seg"}] },
-    fuerzaB: { title: "Fuerza B (Accesorios)", tag:"Miércoles", warmup: [...DEFAULT_WARMUP_LIST], exercises: [{name:"Zancadas",type:"body",note:"10/pierna"},{name:"Hombros",type:"weighted",note:"Sentado"},{name:"Bíceps",type:"weighted",note:"Controlado"},{name:"Tríceps",type:"weighted",note:"Cerrado"}] },
-    cardio: { title: "Cardio + Movilidad", tag:"Mar/Jue", warmup: ["Movilidad Dinámica", "5 min Bici Suave"], exercises: [{name:"Bici",type:"time",note:"Ritmo constante"},{name:"Estiramientos",type:"time",note:"Pecho/Espalda"}] }
-};
+const DEFAULT_ROUTINES = {};
 
 let ROUTINES = JSON.parse(localStorage.getItem('pro_tracker_routines')) || DEFAULT_ROUTINES;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
