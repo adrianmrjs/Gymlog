@@ -219,11 +219,25 @@ input[type="checkbox"].native-check { width: 24px; height: 24px; accent-color: v
 .tag { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .tag.blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
 
+/* FIX: TOAST BAJADO PARA IPHONE 16 */
 .toast {
-    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-    background: rgba(16, 185, 129, 0.95); color: #022c22; padding: 12px 24px;
-    border-radius: 30px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    opacity: 0; transition: all 0.4s; pointer-events: none; z-index: 3000; display: flex; align-items: center; gap: 8px; font-size: 14px; backdrop-filter: blur(10px); width: max-content;
+    position: fixed; 
+    top: 90px; /* Bajado para evitar Dynamic Island */
+    left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: rgba(16, 185, 129, 0.95); 
+    color: #022c22; 
+    padding: 12px 24px;
+    border-radius: 30px; 
+    font-weight: 700; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    opacity: 0; 
+    transition: all 0.4s; 
+    pointer-events: none; 
+    z-index: 3000; 
+    display: flex; align-items: center; gap: 8px; 
+    font-size: 14px; 
+    backdrop-filter: blur(10px); 
+    width: max-content;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -320,8 +334,8 @@ input[type="checkbox"].native-check { width: 24px; height: 24px; accent-color: v
     </div>
 
     <div id="editor" class="screen" style="padding-bottom:100px">
-        <div class="flex-between" style="margin-bottom:20px">
-            <h2>Mis Rutinas</h2>
+        <div class="header-grid" style="margin-bottom: 20px;">
+            <div style="width:44px"></div> <h2 class="header-title">Mis Rutinas</h2>
             <button class="btn icon small action-green" onclick="createNewRoutine()"><i class="ri-add-line"></i></button>
         </div>
         <div id="editor-list"></div>
@@ -872,22 +886,37 @@ function renderCalendar(){
     }
 }
 function changeMonth(d){currentDate.setMonth(currentDate.getMonth()+d);renderCalendar();}
-function selectDate(iso){ selectedDateISO=iso; renderCalendar(); 
+function selectDate(iso){ 
+    selectedDateISO=iso; renderCalendar(); 
     const h = JSON.parse(localStorage.getItem('pro_tracker_db')) || [];
     const items = h.filter(x => x.isoDate === iso);
     const container = document.getElementById('calendar-day-details'); container.innerHTML = '';
-    if(items.length === 0) container.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px">Sin actividad este día</div>';
-    items.forEach(s => { 
-        let detailsHTML = `<div style="font-size:11px;color:#fbbf24;margin-bottom:8px">🔥 ${s.warmup || 'Sin calentamiento'}</div>`;
+    
+    if(items.length === 0) {
+        container.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px">Sin actividad este día</div>';
+        return;
+    }
+    
+    items.forEach(s => {
+        let contentHTML = '';
+        if(s.warmup) contentHTML += `<div style="font-size:11px; color:#fbbf24; margin-bottom:10px; padding-bottom:5px; border-bottom:1px dashed rgba(255,255,255,0.1)">🔥 ${s.warmup}</div>`;
+        
         s.data.forEach(ex => {
-            detailsHTML += `<div style="margin-top:8px"><div class="hist-ex-title">${ex.name}</div>`;
+            contentHTML += `<div class="hist-ex-title" style="margin-top:10px">${ex.name}</div>`;
             ex.sets.forEach((set,i) => {
-                let inf = ex.type==='weighted'?`${set.kg}kg × ${set.reps}`:ex.type==='time'?`${set.reps}`:`${set.reps} reps`;
-                detailsHTML += `<div class="hist-set-row" style="border-bottom:1px solid rgba(255,255,255,0.05)"><span>#${i+1}</span><span>${inf}</span></div>`;
+                let inf = ex.type==='weighted' ? `${set.kg}kg × ${set.reps}` : (ex.type==='time' ? `${set.reps}` : `${set.reps} reps`);
+                contentHTML += `<div class="hist-set-row" style="border-bottom:1px solid rgba(255,255,255,0.05)"><span>#${i+1}</span><span>${inf}</span></div>`;
             });
-            detailsHTML += `</div>`;
         });
-        container.innerHTML += `<div class="card" style="border:1px solid var(--primary); margin-top:10px"><div class="flex-between" style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:8px"><strong>${s.title}</strong><button onclick="deleteItem(${s.id})" class="btn icon small" style="color:var(--danger);border:none;background:none"><i class="ri-delete-bin-line"></i></button></div><div>${detailsHTML}</div></div>`; 
+
+        container.innerHTML += `
+            <div class="card" style="border:1px solid var(--primary-glow); margin-top:10px; animation: slideDown 0.3s">
+                <div class="flex-between" style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:10px">
+                    <strong style="font-size:16px">${s.title}</strong>
+                    <button onclick="deleteItem(${s.id})" class="btn icon small" style="color:#ef4444; width:30px; height:30px"><i class="ri-delete-bin-line"></i></button>
+                </div>
+                <div>${contentHTML}</div>
+            </div>`; 
     });
 }
 async function deleteItem(id) { 
