@@ -58,7 +58,7 @@ small { color: var(--text-muted); font-size: 12px; }
     background: var(--primary); color: white; border: none; padding: 14px; border-radius: var(--radius);
     font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
     width: 100%; transition: transform 0.1s; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-    text-decoration: none; /* Para links que parecen botones */
+    text-decoration: none;
 }
 .btn:active { transform: scale(0.97); }
 .btn.icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; background: rgba(255,255,255,0.05); box-shadow: none; color: white; border: none; display: flex; align-items: center; justify-content: center;}
@@ -309,16 +309,8 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 </div>
 
 <script>
-// 1. DATA & DEFAULTS
-const DEFAULT_WARMUP_LIST = ["Movilidad Cuello", "Círculos Hombros", "Gato-Vaca", "Sentadillas Aire", "5 min suave"];
-// Ahora las rutinas incluyen su propia lista de 'warmup'
-const DEFAULT_ROUTINES = {
-    fuerzaA: { title: "Fuerza A (Full Body)", tag:"Lun/Vie", warmup: [...DEFAULT_WARMUP_LIST], exercises: [{name:"Sentadilla",type:"body",note:"Peso corporal"},{name:"Press Pecho",type:"weighted",note:"Codos 45°"},{name:"Remo",type:"weighted",note:"Espalda recta"},{name:"Peso Muerto",type:"weighted",note:"Liviano"},{name:"Plancha",type:"time",note:"30-40 seg"}] },
-    fuerzaB: { title: "Fuerza B (Accesorios)", tag:"Miércoles", warmup: [...DEFAULT_WARMUP_LIST], exercises: [{name:"Zancadas",type:"body",note:"10/pierna"},{name:"Hombros",type:"weighted",note:"Sentado"},{name:"Bíceps",type:"weighted",note:"Controlado"},{name:"Tríceps",type:"weighted",note:"Cerrado"}] },
-    cardio: { title: "Cardio + Movilidad", tag:"Mar/Jue", warmup: ["Movilidad Dinámica", "5 min Bici Suave"], exercises: [{name:"Bici",type:"time",note:"Ritmo constante"},{name:"Estiramientos",type:"time",note:"Pecho/Espalda"}] }
-};
-
-let ROUTINES = JSON.parse(localStorage.getItem('pro_tracker_routines')) || DEFAULT_ROUTINES;
+// 1. DATA (SIN PREDEFINIDOS)
+let ROUTINES = JSON.parse(localStorage.getItem('pro_tracker_routines')) || {};
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let currentDate = new Date(), selectedDateISO = getLocalISO(), currentRoutineId = null;
 
@@ -387,7 +379,9 @@ async function downloadData(){await forceSync();alert("Datos actualizados");}
 // 4. EDITOR RUTINAS
 function renderRoutinesHome() {
     const c = document.getElementById('routines-list'); c.innerHTML = '';
-    Object.keys(ROUTINES).forEach(id => {
+    const keys = Object.keys(ROUTINES);
+    if(keys.length === 0) { c.innerHTML = '<div style="text-align:center;padding:20px;color:#64748b">No hay rutinas.<br>Sincroniza o crea una nueva.</div>'; return; }
+    keys.forEach(id => {
         const r = ROUTINES[id]; const tag = r.tag ? `<span class="tag blue">${r.tag}</span>` : '';
         c.innerHTML += `<div class="card" onclick="startWorkout('${id}')"><div class="flex-between">${tag}<i class="ri-arrow-right-s-line" style="color:var(--text-muted)"></i></div><h2 style="margin-top:8px">${r.title}</h2></div>`;
     });
@@ -407,14 +401,17 @@ function editRoutine(id) {
     document.getElementById('routine-tag-input').value = r.tag || "";
     
     const wList = document.getElementById('editor-warmup-list'); wList.innerHTML = '';
-    const warmups = r.warmup !== undefined ? r.warmup : DEFAULT_WARMUP_LIST;
+    const warmups = r.warmup || []; // Vacío por defecto
     warmups.forEach(w => addWarmupInput(w));
 
     const list = document.getElementById('routine-exercises-list'); list.innerHTML = '';
     r.exercises.forEach(ex => addExerciseInput(ex));
     
     const delBtn = document.getElementById('delete-routine-btn');
-    delBtn.onclick = () => deleteRoutine(id); delBtn.style.display = Object.keys(ROUTINES).length > 1 ? 'block' : 'none';
+    delBtn.onclick = () => deleteRoutine(id);
+    // ⬇️ MODIFICADO: Ahora el botón de eliminar SIEMPRE es visible
+    delBtn.style.display = 'block'; 
+    
     go('editor-detail');
 }
 
@@ -427,7 +424,6 @@ function addWarmupInput(val = "") {
     document.getElementById('editor-warmup-list').appendChild(div);
 }
 
-// ⬇️ MODIFICADO: AHORA INCLUYE INPUT PARA URL DE YOUTUBE
 function addExerciseInput(ex = null) {
     const div = document.createElement('div'); div.className = 'card editor-item-card';
     div.innerHTML = `
@@ -437,7 +433,6 @@ function addExerciseInput(ex = null) {
     document.getElementById('routine-exercises-list').appendChild(div);
 }
 
-// ⬇️ MODIFICADO: GUARDA LA URL
 function saveRoutineDetail() {
     const title = document.getElementById('routine-title-input').value.trim(); if(!title) return alert("Ponle nombre");
     const tag = document.getElementById('routine-tag-input').value.trim();
@@ -455,7 +450,7 @@ function saveRoutineDetail() {
                 name, 
                 type: card.querySelector('.ex-type').value, 
                 note: card.querySelector('.ex-note').value.trim(),
-                url: card.querySelector('.ex-url').value.trim() // <--- GUARDAMOS URL
+                url: card.querySelector('.ex-url').value.trim()
             });
         }
     });
@@ -477,7 +472,7 @@ function startWorkout(id) {
     const t = ROUTINES[id]; currentRoutineId = id;
     document.getElementById('active-title').innerText = t.title;
     
-    const currentWarmup = t.warmup !== undefined ? t.warmup : DEFAULT_WARMUP_LIST;
+    const currentWarmup = t.warmup || []; // Vacío por defecto
     const wContainer = document.getElementById('warmup-items');
     if (currentWarmup.length === 0) {
         wContainer.innerHTML = '<div style="text-align:center; padding:10px; color:#64748b; font-size:12px">Sin calentamiento específico</div>';
@@ -487,7 +482,6 @@ function startWorkout(id) {
     
     const c = document.getElementById('workout-container'); c.innerHTML = '';
     t.exercises.forEach(ex => {
-        // ⬇️ MODIFICADO: BOTÓN DE YOUTUBE SI EXISTE URL
         const ytBtn = ex.url ? `<a href="${ex.url}" target="_blank" class="btn yt"><i class="ri-youtube-fill"></i> Ver Video</a>` : '';
         
         let head = '', btnTxt = ex.type==='time' ? '+ Tiempo' : '+ Set';
