@@ -202,9 +202,11 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
             <div class="card" style="margin:0; padding:12px; text-align:center">
                 <div id="current-weight-display" style="color:var(--success);font-weight:800;font-size:16px">--</div><small>Peso</small>
             </div>
-            <div class="card" style="margin:0; padding:12px; text-align:center">
-                <div style="color:white;font-weight:800;font-size:16px">78 kg</div><small>Meta</small>
+            
+            <div class="card" style="margin:0; padding:12px; text-align:center; cursor:pointer" onclick="editGoalWeight()">
+                <div id="goal-weight-display" style="color:white;font-weight:800;font-size:16px">-- kg</div><small>Meta <i class="ri-pencil-fill" style="font-size:10px"></i></small>
             </div>
+            
             <div class="card" style="margin:0; padding:12px; text-align:center">
                 <div id="total-sessions" style="color:var(--primary);font-weight:800;font-size:16px">0</div><small>Sesiones</small>
             </div>
@@ -311,6 +313,12 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 <script>
 // 1. DATA (SIN PREDEFINIDOS)
 let ROUTINES = JSON.parse(localStorage.getItem('pro_tracker_routines')) || {};
+
+// Aseguramos que exista el objeto de configuración dentro de ROUTINES
+if (!ROUTINES.config_app) {
+    ROUTINES.config_app = { goal: 78 }; // Valor por defecto si no existe
+}
+
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let currentDate = new Date(), selectedDateISO = getLocalISO(), currentRoutineId = null;
 
@@ -349,6 +357,7 @@ async function forceSync() {
             localStorage.setItem('weight_log',JSON.stringify(w));
         }
         
+        // Aquí se guardan las rutinas Y LA META (porque la meta está dentro de ROUTINES.config_app)
         const localR = JSON.parse(localStorage.getItem('pro_tracker_routines'));
         if(localR) await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'save_routines',payload:localR})});
 
@@ -367,6 +376,8 @@ async function forceSync() {
         if(cloud.routines) {
             localStorage.setItem('pro_tracker_routines', JSON.stringify(cloud.routines));
             ROUTINES = cloud.routines;
+            // Aseguramos config al cargar de la nube
+            if (!ROUTINES.config_app) ROUTINES.config_app = { goal: 78 };
             renderRoutinesHome();
         }
 
@@ -379,8 +390,10 @@ async function downloadData(){await forceSync();alert("Datos actualizados");}
 // 4. EDITOR RUTINAS
 function renderRoutinesHome() {
     const c = document.getElementById('routines-list'); c.innerHTML = '';
-    const keys = Object.keys(ROUTINES);
+    const keys = Object.keys(ROUTINES).filter(k => k !== 'config_app'); // ⚠️ FILTRAMOS PARA NO MOSTRAR LA CONFIG COMO RUTINA
+    
     if(keys.length === 0) { c.innerHTML = '<div style="text-align:center;padding:20px;color:#64748b">No hay rutinas.<br>Sincroniza o crea una nueva.</div>'; return; }
+    
     keys.forEach(id => {
         const r = ROUTINES[id]; const tag = r.tag ? `<span class="tag blue">${r.tag}</span>` : '';
         c.innerHTML += `<div class="card" onclick="startWorkout('${id}')"><div class="flex-between">${tag}<i class="ri-arrow-right-s-line" style="color:var(--text-muted)"></i></div><h2 style="margin-top:8px">${r.title}</h2></div>`;
@@ -388,7 +401,7 @@ function renderRoutinesHome() {
 }
 function renderEditorList() {
     const c = document.getElementById('editor-list'); c.innerHTML = '';
-    Object.keys(ROUTINES).forEach(id => {
+    Object.keys(ROUTINES).filter(k => k !== 'config_app').forEach(id => {
         c.innerHTML += `<div class="card flex-between" onclick="editRoutine('${id}')"><strong>${ROUTINES[id].title}</strong><i class="ri-edit-2-line" style="color:var(--text-muted)"></i></div>`;
     });
 }
@@ -401,7 +414,7 @@ function editRoutine(id) {
     document.getElementById('routine-tag-input').value = r.tag || "";
     
     const wList = document.getElementById('editor-warmup-list'); wList.innerHTML = '';
-    const warmups = r.warmup || []; // Vacío por defecto
+    const warmups = r.warmup || []; 
     warmups.forEach(w => addWarmupInput(w));
 
     const list = document.getElementById('routine-exercises-list'); list.innerHTML = '';
@@ -409,7 +422,6 @@ function editRoutine(id) {
     
     const delBtn = document.getElementById('delete-routine-btn');
     delBtn.onclick = () => deleteRoutine(id);
-    // ⬇️ MODIFICADO: Ahora el botón de eliminar SIEMPRE es visible
     delBtn.style.display = 'block'; 
     
     go('editor-detail');
@@ -472,7 +484,7 @@ function startWorkout(id) {
     const t = ROUTINES[id]; currentRoutineId = id;
     document.getElementById('active-title').innerText = t.title;
     
-    const currentWarmup = t.warmup || []; // Vacío por defecto
+    const currentWarmup = t.warmup || []; 
     const wContainer = document.getElementById('warmup-items');
     if (currentWarmup.length === 0) {
         wContainer.innerHTML = '<div style="text-align:center; padding:10px; color:#64748b; font-size:12px">Sin calentamiento específico</div>';
@@ -528,8 +540,49 @@ function saveBodyWeight() {
     const l = JSON.parse(localStorage.getItem('weight_log')) || []; l.push({ date: getLocalISO(), weight: v, synced: false }); localStorage.setItem('weight_log', JSON.stringify(l));
     document.getElementById('input-bodyweight').value = ''; renderStats(); forceSync();
 }
+
+// ⬇️ NUEVA FUNCIÓN: Editar y Guardar Meta en el objeto de rutinas
+function editGoalWeight() {
+    const current = ROUTINES.config_app ? ROUTINES.config_app.goal : 78;
+    const newGoal = prompt("Ingresa tu meta de peso (kg):", current);
+    
+    if (newGoal && !isNaN(newGoal)) {
+        if (!ROUTINES.config_app) ROUTINES.config_app = {};
+        ROUTINES.config_app.goal = parseFloat(newGoal);
+        
+        // Guardamos en LocalStorage
+        localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES));
+        
+        // Actualizamos pantalla
+        renderStats();
+        
+        // Pedimos Sync para que suba al Excel (porque modificamos ROUTINES)
+        updateSyncUI('pending');
+    }
+}
+
 let timerI=null,secL=0; function startTimer(s){stopTimer();secL=s;document.getElementById('rest-timer').classList.remove('hidden');ut();timerI=setInterval(()=>{secL--;ut();if(secL<=0){stopTimer();playBeep();}},1000);} function stopTimer(){clearInterval(timerI);document.getElementById('rest-timer').classList.add('hidden');} function addTime(s){secL+=s;ut();} function ut(){const m=Math.floor(secL/60).toString().padStart(2,'0'),s=(secL%60).toString().padStart(2,'0');document.getElementById('timer-countdown').innerText=`${m}:${s}`;} function playBeep(){const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=800;g.gain.value=0.1;o.start();setTimeout(()=>o.stop(),200);}
-let chart=null; function renderStats(){const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[];document.getElementById('total-sessions').innerText=h.length;const w=localStorage.getItem('user_weight_current');if(w){document.getElementById('current-weight-display').innerText=w+' kg';document.getElementById('last-weight-date').innerText=localStorage.getItem('user_weight_date');}const p=h.some(x=>!x.synced)||(JSON.parse(localStorage.getItem('weight_log'))||[]).some(x=>!x.synced);updateSyncUI(p?'pending':'synced');const ctx=document.getElementById('weightChart');if(ctx){const l=JSON.parse(localStorage.getItem('weight_log'))||[],d=l.slice(-10);if(chart)chart.destroy();chart=new Chart(ctx,{type:'line',data:{labels:d.map(x=>x.date.slice(5)),datasets:[{data:d.map(x=>x.weight),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',borderWidth:3,tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#064e3b'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});}}
+
+let chart=null; 
+function renderStats(){
+    const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[];
+    document.getElementById('total-sessions').innerText=h.length;
+    
+    // ⬇️ MODIFICADO: Leemos la meta desde ROUTINES.config_app
+    const goal = ROUTINES.config_app ? ROUTINES.config_app.goal : 78;
+    document.getElementById('goal-weight-display').innerHTML = `${goal} kg`;
+
+    const w=localStorage.getItem('user_weight_current');
+    if(w){document.getElementById('current-weight-display').innerText=w+' kg';document.getElementById('last-weight-date').innerText=localStorage.getItem('user_weight_date');}
+    
+    const p=h.some(x=>!x.synced)||(JSON.parse(localStorage.getItem('weight_log'))||[]).some(x=>!x.synced);
+    updateSyncUI(p?'pending':'synced');
+    
+    const ctx=document.getElementById('weightChart');
+    if(ctx){const l=JSON.parse(localStorage.getItem('weight_log'))||[],d=l.slice(-10);if(chart)chart.destroy();chart=new Chart(ctx,{type:'line',data:{labels:d.map(x=>x.date.slice(5)),datasets:[{data:d.map(x=>x.weight),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',borderWidth:3,tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#064e3b'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+    }
+}
+
 function renderCalendar(){const y=currentDate.getFullYear(),m=currentDate.getMonth();document.getElementById('cal-month-year').innerText=`${["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m]} ${y}`;const c=document.getElementById('cal-days-container');c.innerHTML='';const h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[], dates=h.map(x=>x.isoDate);const fd=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate(),today=getLocalISO();for(let i=0;i<fd;i++)c.innerHTML+=`<div class="cal-day" style="opacity:0"></div>`;for(let d=1;d<=dim;d++){const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;let cls=iso===today?'today':iso===selectedDateISO?'selected':'';if(dates.includes(iso))cls+=' has-workout';c.innerHTML+=`<div class="cal-day ${cls}" onclick="selectDate('${iso}')">${d}</div>`;}}
 function changeMonth(d){currentDate.setMonth(currentDate.getMonth()+d);renderCalendar();} function selectDate(iso){selectedDateISO=iso;renderCalendar();renderHistoryList(iso);}
 async function deleteItem(id) { let h=JSON.parse(localStorage.getItem('pro_tracker_db'))||[]; h=h.filter(x=>x.id!==id); localStorage.setItem('pro_tracker_db',JSON.stringify(h)); renderCalendar(); renderHistoryList(selectedDateISO); renderStats(); if(navigator.onLine && !API_URL.includes("GOOGLE")) { try { await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({action:'delete_workout',id:id})}); } catch(e){} } }
