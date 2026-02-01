@@ -58,12 +58,14 @@ small { color: var(--text-muted); font-size: 12px; }
     background: var(--primary); color: white; border: none; padding: 14px; border-radius: var(--radius);
     font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
     width: 100%; transition: transform 0.1s; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    text-decoration: none; /* Para links que parecen botones */
 }
 .btn:active { transform: scale(0.97); }
 .btn.icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; background: rgba(255,255,255,0.05); box-shadow: none; color: white; border: none; display: flex; align-items: center; justify-content: center;}
 .btn.small { padding: 8px 12px; font-size: 12px; width: auto; background: transparent; border: 1px dashed var(--surface-hover); color: var(--primary); box-shadow: none; }
 .btn.text { background: none; box-shadow: none; padding: 8px; width: auto; color: var(--text-muted); font-size: 14px; }
 .btn.danger { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); box-shadow: none; }
+.btn.yt { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 10px; margin-left: 8px; display: inline-flex; width: auto; box-shadow: none; height: auto; }
 
 /* Boton de acción principal (Verde) */
 .btn.action-green { background: var(--success); color: #022c22; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
@@ -308,9 +310,13 @@ input[type="checkbox"].native-check { appearance: auto; width: 24px; height: 24p
 
 <script>
 // 1. DATA & DEFAULTS
-const DEFAULT_WARMUP_LIST = [""];
+const DEFAULT_WARMUP_LIST = ["Movilidad Cuello", "Círculos Hombros", "Gato-Vaca", "Sentadillas Aire", "5 min suave"];
 // Ahora las rutinas incluyen su propia lista de 'warmup'
-const DEFAULT_ROUTINES = {};
+const DEFAULT_ROUTINES = {
+    fuerzaA: { title: "Fuerza A (Full Body)", tag:"Lun/Vie", warmup: [...DEFAULT_WARMUP_LIST], exercises: [{name:"Sentadilla",type:"body",note:"Peso corporal"},{name:"Press Pecho",type:"weighted",note:"Codos 45°"},{name:"Remo",type:"weighted",note:"Espalda recta"},{name:"Peso Muerto",type:"weighted",note:"Liviano"},{name:"Plancha",type:"time",note:"30-40 seg"}] },
+    fuerzaB: { title: "Fuerza B (Accesorios)", tag:"Miércoles", warmup: [...DEFAULT_WARMUP_LIST], exercises: [{name:"Zancadas",type:"body",note:"10/pierna"},{name:"Hombros",type:"weighted",note:"Sentado"},{name:"Bíceps",type:"weighted",note:"Controlado"},{name:"Tríceps",type:"weighted",note:"Cerrado"}] },
+    cardio: { title: "Cardio + Movilidad", tag:"Mar/Jue", warmup: ["Movilidad Dinámica", "5 min Bici Suave"], exercises: [{name:"Bici",type:"time",note:"Ritmo constante"},{name:"Estiramientos",type:"time",note:"Pecho/Espalda"}] }
+};
 
 let ROUTINES = JSON.parse(localStorage.getItem('pro_tracker_routines')) || DEFAULT_ROUTINES;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -393,7 +399,6 @@ function renderEditorList() {
     });
 }
 
-// ⬇️ MODIFICADO: Ahora crea rutinas con warmup vacío []
 function createNewRoutine() { currentRoutineId = 'custom_' + Date.now(); ROUTINES[currentRoutineId] = { title: "", tag:"", warmup:[], exercises: [] }; editRoutine(currentRoutineId); }
 
 function editRoutine(id) {
@@ -401,15 +406,10 @@ function editRoutine(id) {
     document.getElementById('routine-title-input').value = r.title;
     document.getElementById('routine-tag-input').value = r.tag || "";
     
-    // Cargar Calentamiento
     const wList = document.getElementById('editor-warmup-list'); wList.innerHTML = '';
-    
-    // Si la rutina no tiene warmup definido (versiones viejas), usa el default. Si tiene (aunque sea vacío), usa el suyo.
     const warmups = r.warmup !== undefined ? r.warmup : DEFAULT_WARMUP_LIST;
-    
     warmups.forEach(w => addWarmupInput(w));
 
-    // Cargar Ejercicios
     const list = document.getElementById('routine-exercises-list'); list.innerHTML = '';
     r.exercises.forEach(ex => addExerciseInput(ex));
     
@@ -427,29 +427,37 @@ function addWarmupInput(val = "") {
     document.getElementById('editor-warmup-list').appendChild(div);
 }
 
+// ⬇️ MODIFICADO: AHORA INCLUYE INPUT PARA URL DE YOUTUBE
 function addExerciseInput(ex = null) {
     const div = document.createElement('div'); div.className = 'card editor-item-card';
     div.innerHTML = `
         <div class="editor-input-group"><input type="text" placeholder="Nombre Ejercicio" class="ex-name" value="${ex?.name||''}" style="text-align:left"><select class="ex-type"><option value="weighted" ${ex?.type==='weighted'?'selected':''}>Con Peso</option><option value="body" ${ex?.type==='body'?'selected':''}>Corporal</option><option value="time" ${ex?.type==='time'?'selected':''}>Tiempo</option></select></div>
-        <div class="flex-between"><input type="text" placeholder="Nota (ej: Codos 45°)" class="ex-note" value="${ex?.note||''}" style="text-align:left; width:80%"><button class="btn icon small" onclick="this.closest('.editor-item-card').remove()" style="color:var(--danger)"><i class="ri-delete-bin-line"></i></button></div>`;
+        <div class="flex-between" style="margin-bottom:8px"><input type="text" placeholder="Nota (ej: Codos 45°)" class="ex-note" value="${ex?.note||''}" style="text-align:left; width:80%"><button class="btn icon small" onclick="this.closest('.editor-item-card').remove()" style="color:var(--danger)"><i class="ri-delete-bin-line"></i></button></div>
+        <div><input type="text" placeholder="Pegar Link YouTube..." class="ex-url" value="${ex?.url||''}" style="text-align:left; font-size:12px; opacity:0.7; background:rgba(0,0,0,0.3)"></div>`;
     document.getElementById('routine-exercises-list').appendChild(div);
 }
 
+// ⬇️ MODIFICADO: GUARDA LA URL
 function saveRoutineDetail() {
     const title = document.getElementById('routine-title-input').value.trim(); if(!title) return alert("Ponle nombre");
     const tag = document.getElementById('routine-tag-input').value.trim();
     
-    // Guardar Warmups
     const warmup = [];
     document.querySelectorAll('.warmup-val').forEach(inp => {
         if(inp.value.trim()) warmup.push(inp.value.trim());
     });
 
-    // Guardar Ejercicios
     const exercises = [];
     document.querySelectorAll('.editor-item-card').forEach(card => {
         const name = card.querySelector('.ex-name').value.trim();
-        if(name) exercises.push({ name, type: card.querySelector('.ex-type').value, note: card.querySelector('.ex-note').value.trim() });
+        if(name) {
+            exercises.push({ 
+                name, 
+                type: card.querySelector('.ex-type').value, 
+                note: card.querySelector('.ex-note').value.trim(),
+                url: card.querySelector('.ex-url').value.trim() // <--- GUARDAMOS URL
+            });
+        }
     });
     if(!exercises.length) return alert("Agrega ejercicios");
 
@@ -469,9 +477,7 @@ function startWorkout(id) {
     const t = ROUTINES[id]; currentRoutineId = id;
     document.getElementById('active-title').innerText = t.title;
     
-    // ⬇️ MODIFICADO: Respeta listas vacías []
     const currentWarmup = t.warmup !== undefined ? t.warmup : DEFAULT_WARMUP_LIST;
-    
     const wContainer = document.getElementById('warmup-items');
     if (currentWarmup.length === 0) {
         wContainer.innerHTML = '<div style="text-align:center; padding:10px; color:#64748b; font-size:12px">Sin calentamiento específico</div>';
@@ -481,10 +487,14 @@ function startWorkout(id) {
     
     const c = document.getElementById('workout-container'); c.innerHTML = '';
     t.exercises.forEach(ex => {
+        // ⬇️ MODIFICADO: BOTÓN DE YOUTUBE SI EXISTE URL
+        const ytBtn = ex.url ? `<a href="${ex.url}" target="_blank" class="btn yt"><i class="ri-youtube-fill"></i> Ver Video</a>` : '';
+        
         let head = '', btnTxt = ex.type==='time' ? '+ Tiempo' : '+ Set';
         if(ex.type==='weighted') head = `<div class="sets-header grid-weighted"><span>#</span><span>KG</span><span>REPS</span><span>OK</span></div>`;
         else head = `<div class="sets-header grid-simple"><span>#</span><span>${ex.type==='time'?'TIEMPO':'REPS'}</span><span>OK</span></div>`;
-        c.innerHTML += `<div class="card ex-card" data-n="${ex.name}" data-t="${ex.type}"><div class="flex-between"><div><strong style="font-size:16px">${ex.name}</strong><div style="font-size:11px;color:var(--warning);margin-top:4px">${ex.note}</div></div><button class="btn small" onclick="addSet(this, '${ex.type}')">${btnTxt}</button></div><div style="margin-top:15px">${head}<div class="sets"></div></div></div>`;
+        
+        c.innerHTML += `<div class="card ex-card" data-n="${ex.name}" data-t="${ex.type}"><div class="flex-between"><div><strong style="font-size:16px; display:flex; align-items:center">${ex.name} ${ytBtn}</strong><div style="font-size:11px;color:var(--warning);margin-top:4px">${ex.note}</div></div><button class="btn small" onclick="addSet(this, '${ex.type}')">${btnTxt}</button></div><div style="margin-top:15px">${head}<div class="sets"></div></div></div>`;
     });
     go('training');
 }
