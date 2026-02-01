@@ -9,6 +9,9 @@
 <meta name="apple-mobile-web-app-title" content="GYMLOG">
 <title>GYMLOG</title>
 
+<link rel="icon" type="image/png" href="img/logo.png">
+<link rel="apple-touch-icon" href="img/logo.png">
+
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -219,10 +222,10 @@ input[type="checkbox"].native-check { width: 24px; height: 24px; accent-color: v
 .tag { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .tag.blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
 
-/* FIX: TOAST BAJADO PARA IPHONE 16 */
+/* TOAST AJUSTADO PARA IPHONE 16 */
 .toast {
     position: fixed; 
-    top: 90px; /* Bajado para evitar Dynamic Island */
+    top: 90px; 
     left: 50%; transform: translateX(-50%) translateY(-20px);
     background: rgba(16, 185, 129, 0.95); 
     color: #022c22; 
@@ -259,7 +262,18 @@ input[type="checkbox"].native-check { width: 24px; height: 24px; accent-color: v
 .cal-day.has-workout { background: rgba(16, 185, 129, 0.15); color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
 .cal-day.selected { background: var(--primary) !important; color: white !important; border-color: transparent; box-shadow: 0 4px 15px var(--primary-glow); }
 
-/* --- HISTORIAL CARD MEJORADA --- */
+.history-card { cursor: pointer; transition: background 0.2s; }
+.history-card:active { background: var(--surface-hover); }
+.history-header { display: flex; align-items: center; gap: 15px; }
+.history-date-box { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 8px 12px; text-align: center; min-width: 60px; border: 1px solid rgba(255,255,255,0.1); }
+.history-day-num { font-size: 18px; font-weight: 800; color: var(--primary); line-height: 1; }
+.history-day-name { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-top: 2px; }
+.history-info { flex-grow: 1; }
+.history-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.history-meta { font-size: 11px; color: var(--text-muted); display: flex; gap: 10px; }
+.history-details { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); animation: slideDown 0.2s ease-out; }
+.history-card.expanded .history-details { display: block; }
+@keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 .hist-ex-title { color: white; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
 .hist-set-row { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; border-bottom: 1px solid rgba(255,255,255,0.03); padding: 6px 0; }
 .pr-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -335,7 +349,8 @@ input[type="checkbox"].native-check { width: 24px; height: 24px; accent-color: v
 
     <div id="editor" class="screen" style="padding-bottom:100px">
         <div class="header-grid" style="margin-bottom: 20px;">
-            <div style="width:44px"></div> <h2 class="header-title">Mis Rutinas</h2>
+            <div style="width:44px"></div> 
+            <h2 class="header-title">Mis Rutinas</h2>
             <button class="btn icon small action-green" onclick="createNewRoutine()"><i class="ri-add-line"></i></button>
         </div>
         <div id="editor-list"></div>
@@ -897,25 +912,29 @@ function selectDate(iso){
         return;
     }
     
-    items.forEach(s => {
-        let contentHTML = '';
-        if(s.warmup) contentHTML += `<div style="font-size:11px; color:#fbbf24; margin-bottom:10px; padding-bottom:5px; border-bottom:1px dashed rgba(255,255,255,0.1)">🔥 ${s.warmup}</div>`;
-        
+    // --- ESTILO DE TARJETA UNIFICADO (IGUAL AL TIMELINE) ---
+    items.forEach(s => { 
+        let detailsHTML = `<div style="font-size:11px;color:#fbbf24;margin-bottom:8px">🔥 ${s.warmup || 'Sin calentamiento'}</div>`;
         s.data.forEach(ex => {
-            contentHTML += `<div class="hist-ex-title" style="margin-top:10px">${ex.name}</div>`;
+            detailsHTML += `<div style="margin-top:8px"><div class="hist-ex-title">${ex.name}</div>`;
             ex.sets.forEach((set,i) => {
-                let inf = ex.type==='weighted' ? `${set.kg}kg × ${set.reps}` : (ex.type==='time' ? `${set.reps}` : `${set.reps} reps`);
-                contentHTML += `<div class="hist-set-row" style="border-bottom:1px solid rgba(255,255,255,0.05)"><span>#${i+1}</span><span>${inf}</span></div>`;
+                let inf = ex.type==='weighted'?`${set.kg}kg × ${set.reps}`:ex.type==='time'?`${set.reps}`:`${set.reps} reps`;
+                detailsHTML += `<div class="hist-set-row" style="border-bottom:1px solid rgba(255,255,255,0.05)"><span>#${i+1}</span><span>${inf}</span></div>`;
             });
+            detailsHTML += `</div>`;
         });
 
+        // Usamos el mismo HTML que en renderTimeline pero sin la fecha repetida arriba
         container.innerHTML += `
-            <div class="card" style="border:1px solid var(--primary-glow); margin-top:10px; animation: slideDown 0.3s">
-                <div class="flex-between" style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:10px">
+            <div class="card" style="border:1px solid var(--primary); margin-top:10px; animation: slideDown 0.3s">
+                <div class="flex-between" style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:8px">
                     <strong style="font-size:16px">${s.title}</strong>
-                    <button onclick="deleteItem(${s.id})" class="btn icon small" style="color:#ef4444; width:30px; height:30px"><i class="ri-delete-bin-line"></i></button>
+                    <div style="display:flex; gap:15px; align-items:center">
+                        ${s.synced?'<i class="ri-check-line" style="color:var(--success)"></i>':''}
+                        <button onclick="deleteItem(${s.id})" class="btn icon small" style="color:var(--danger);border:none;background:none;padding:0"><i class="ri-delete-bin-line" style="font-size:18px"></i></button>
+                    </div>
                 </div>
-                <div>${contentHTML}</div>
+                <div>${detailsHTML}</div>
             </div>`; 
     });
 }
