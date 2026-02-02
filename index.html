@@ -87,7 +87,27 @@ small { color: var(--text-muted); font-size: 12px; font-weight: 500; }
 .btn.small { padding: 8px 14px; font-size: 12px; width: auto; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--primary); box-shadow: none; }
 .btn.text { background: none; box-shadow: none; padding: 8px; width: auto; color: var(--text-muted); }
 .btn.danger { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); box-shadow: none; }
-.btn.yt { background: #ff000020; border: 1px solid #ff000060; color: #ff9999; padding: 4px 10px; border-radius: 8px; font-size: 11px; margin-left: auto; display: inline-flex; width: auto; box-shadow: none; height: auto; gap:4px; align-items:center; text-decoration:none}
+
+/* ESTILO DEL BOTON YOUTUBE MEJORADO */
+.btn.yt { 
+    background: rgba(239, 68, 68, 0.1); 
+    border: 1px solid rgba(239, 68, 68, 0.4); 
+    color: #f87171; 
+    padding: 2px 8px; 
+    border-radius: 6px; 
+    font-size: 10px; 
+    font-weight: 600;
+    margin-left: 0; /* Ya no usamos auto */
+    display: inline-flex; 
+    width: auto; 
+    box-shadow: none; 
+    height: 22px; 
+    gap: 4px; 
+    align-items: center; 
+    text-decoration: none;
+    white-space: nowrap;
+}
+
 .btn.action-green { background: var(--success); color: #022c22; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3); border:none; }
 
 .card { 
@@ -174,7 +194,6 @@ input:focus, select:focus { border-color: var(--primary); }
     display: flex; flex-direction: column; align-items: center; gap: 4px; 
     cursor: pointer; flex: 1; padding: 8px 0; border-radius: 16px; transition: 0.2s;
 }
-/* CAMBIO: Color activo más brillante (Primary) */
 .nav-item.active { color: var(--primary); background: rgba(99, 102, 241, 0.1); } 
 .nav-item i { font-size: 24px; margin-bottom: 2px; }
 
@@ -690,7 +709,14 @@ function startWorkout(id) {
         else head = `<div class="sets-header grid-simple"><span>#</span><span>${ex.type==='time'?'TIEMPO':'REPS'}</span><span>OK</span></div>`;
         c.innerHTML += `<div class="card ex-card" data-n="${ex.name}" data-t="${ex.type}">
             <div class="flex-between">
-                <div><strong style="font-size:16px; display:block">${ex.name} ${ytBtn}</strong>${lastLogHtml}<div style="font-size:11px;color:var(--warning);margin-top:4px">${ex.note}</div></div>
+                <div>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
+                         <strong style="font-size:16px">${ex.name}</strong>
+                         ${ytBtn}
+                    </div>
+                    ${lastLogHtml}
+                    <div style="font-size:11px;color:var(--warning);margin-top:4px">${ex.note}</div>
+                </div>
                 <button class="btn small" onclick="addSet(this, '${ex.type}')">${btnTxt}</button>
             </div>
             <div style="margin-top:15px">${head}<div class="sets"></div></div>
@@ -906,13 +932,7 @@ function selectDate(iso){
     const h = JSON.parse(localStorage.getItem('pro_tracker_db')) || [];
     const items = h.filter(x => x.isoDate === iso);
     const container = document.getElementById('calendar-day-details'); container.innerHTML = '';
-    
-    if(items.length === 0) {
-        container.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px">Sin actividad este día</div>';
-        return;
-    }
-    
-    // --- ESTILO DE TARJETA UNIFICADO (IGUAL AL TIMELINE) ---
+    if(items.length === 0) container.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:12px; margin-top:20px">Sin actividad este día</div>';
     items.forEach(s => { 
         let detailsHTML = `<div style="font-size:11px;color:#fbbf24;margin-bottom:8px">🔥 ${s.warmup || 'Sin calentamiento'}</div>`;
         s.data.forEach(ex => {
@@ -923,19 +943,7 @@ function selectDate(iso){
             });
             detailsHTML += `</div>`;
         });
-
-        // Usamos el mismo HTML que en renderTimeline pero sin la fecha repetida arriba
-        container.innerHTML += `
-            <div class="card" style="border:1px solid var(--primary); margin-top:10px; animation: slideDown 0.3s">
-                <div class="flex-between" style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:8px">
-                    <strong style="font-size:16px">${s.title}</strong>
-                    <div style="display:flex; gap:15px; align-items:center">
-                        ${s.synced?'<i class="ri-check-line" style="color:var(--success)"></i>':''}
-                        <button onclick="deleteItem(${s.id})" class="btn icon small" style="color:var(--danger);border:none;background:none;padding:0"><i class="ri-delete-bin-line" style="font-size:18px"></i></button>
-                    </div>
-                </div>
-                <div>${detailsHTML}</div>
-            </div>`; 
+        container.innerHTML += `<div class="card" style="border:1px solid var(--primary-glow); margin-top:10px; animation: slideDown 0.3s"><div class="flex-between" style="border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px; margin-bottom:8px"><strong>${s.title}</strong><button onclick="deleteItem(${s.id})" class="btn icon small" style="color:var(--danger);border:none;background:none;padding:0"><i class="ri-delete-bin-line" style="font-size:18px"></i></button></div><div>${detailsHTML}</div></div>`; 
     });
 }
 async function deleteItem(id) { 
