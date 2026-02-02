@@ -87,28 +87,26 @@ small { color: var(--text-muted); font-size: 12px; font-weight: 500; }
 .btn.small { padding: 8px 14px; font-size: 12px; width: auto; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--primary); box-shadow: none; }
 .btn.text { background: none; box-shadow: none; padding: 8px; width: auto; color: var(--text-muted); }
 .btn.danger { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); box-shadow: none; }
+.btn.action-green { background: var(--success); color: #022c22; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3); border:none; }
 
-/* ESTILO DEL BOTON YOUTUBE MEJORADO */
+/* BOTON YOUTUBE MEJORADO (Compacto) */
 .btn.yt { 
-    background: rgba(239, 68, 68, 0.1); 
+    background: rgba(239, 68, 68, 0.15); 
     border: 1px solid rgba(239, 68, 68, 0.4); 
     color: #f87171; 
-    padding: 2px 8px; 
-    border-radius: 6px; 
-    font-size: 10px; 
-    font-weight: 600;
-    margin-left: 0; /* Ya no usamos auto */
+    padding: 6px 12px; 
+    border-radius: 8px; 
+    font-size: 11px; 
+    font-weight: 700;
     display: inline-flex; 
-    width: auto; 
-    box-shadow: none; 
-    height: 22px; 
-    gap: 4px; 
     align-items: center; 
+    justify-content: center;
+    gap: 4px; 
     text-decoration: none;
-    white-space: nowrap;
+    transition: 0.2s;
+    width: 100%; /* Ocupa el ancho de su contenedor */
 }
-
-.btn.action-green { background: var(--success); color: #022c22; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3); border:none; }
+.btn.yt:active { background: rgba(239, 68, 68, 0.25); }
 
 .card { 
     background: var(--bg-card); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; 
@@ -132,40 +130,12 @@ input:focus, select:focus { border-color: var(--primary); }
     font-weight: 800; text-transform: uppercase; 
 }
 
-/* --- 5. SYNC BADGE MEJORADO (PILL) --- */
-.sync-badge { 
-    background: rgba(16, 185, 129, 0.1); 
-    color: #34d399; 
-    padding: 8px 16px; 
-    border-radius: 30px; 
-    font-size: 12px; 
-    font-weight: 700; 
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
-    cursor: pointer; 
-    border: 1px solid rgba(16, 185, 129, 0.2); 
-    transition: all 0.2s;
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
-}
+/* --- 5. SYNC BADGE --- */
+.sync-badge { background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 8px 16px; border-radius: 30px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; border: 1px solid rgba(16, 185, 129, 0.2); transition: all 0.2s; box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
 .sync-badge:active { transform: scale(0.95); background: rgba(16, 185, 129, 0.2); }
-.sync-badge.pending { 
-    background: rgba(245, 158, 11, 0.1); 
-    color: #fbbf24; 
-    border-color: rgba(245, 158, 11, 0.2);
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.1);
-}
-.sync-badge.syncing {
-    background: rgba(99, 102, 241, 0.1); 
-    color: #818cf8; 
-    border-color: rgba(99, 102, 241, 0.3);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
-}
-.sync-badge.error { 
-    background: rgba(239, 68, 68, 0.1); 
-    color: #f87171; 
-    border-color: rgba(239, 68, 68, 0.3); 
-}
+.sync-badge.pending { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border-color: rgba(245, 158, 11, 0.2); box-shadow: 0 0 15px rgba(245, 158, 11, 0.1); }
+.sync-badge.syncing { background: rgba(99, 102, 241, 0.1); color: #818cf8; border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
+.sync-badge.error { background: rgba(239, 68, 68, 0.1); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
 .sync-spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }
 
 /* --- 6. TIMER & NAV --- */
@@ -207,7 +177,7 @@ input:focus, select:focus { border-color: var(--primary); }
     z-index: 1000;
 }
 
-/* --- 7. LISTAS --- */
+/* --- 7. LISTAS & CARDS --- */
 .warmup-item { 
     display: flex; justify-content: space-between; align-items: center; 
     padding: 12px 16px; background: rgba(255,255,255,0.03); 
@@ -241,25 +211,13 @@ input[type="checkbox"].native-check { width: 24px; height: 24px; accent-color: v
 .tag { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .tag.blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
 
-/* TOAST AJUSTADO PARA IPHONE 16 */
+/* TOAST */
 .toast {
-    position: fixed; 
-    top: 90px; 
-    left: 50%; transform: translateX(-50%) translateY(-20px);
-    background: rgba(16, 185, 129, 0.95); 
-    color: #022c22; 
-    padding: 12px 24px;
-    border-radius: 30px; 
-    font-weight: 700; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    opacity: 0; 
-    transition: all 0.4s; 
-    pointer-events: none; 
-    z-index: 3000; 
-    display: flex; align-items: center; gap: 8px; 
-    font-size: 14px; 
-    backdrop-filter: blur(10px); 
-    width: max-content;
+    position: fixed; top: 90px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: rgba(16, 185, 129, 0.95); color: #022c22; padding: 12px 24px;
+    border-radius: 30px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    opacity: 0; transition: all 0.4s; pointer-events: none; z-index: 3000; 
+    display: flex; align-items: center; gap: 8px; font-size: 14px; backdrop-filter: blur(10px); width: max-content;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -649,7 +607,9 @@ function saveRoutineDetail() {
             });
         }
     });
-    if(!exercises.length) return showToast("Agrega ejercicios");
+    // FIX: Permitir guardar si tiene al menos un item (ejercicio o calentamiento)
+    if(!exercises.length && !warmup.length) return showToast("Agrega ejercicios o calentamiento");
+
     ROUTINES[currentRoutineId] = { title, tag, warmup, exercises }; 
     localStorage.setItem('pro_tracker_routines', JSON.stringify(ROUTINES));
     go('editor'); updateSyncUI('pending');
@@ -707,17 +667,19 @@ function startWorkout(id) {
         let head = '', btnTxt = ex.type==='time' ? '+ Tiempo' : '+ Set';
         if(ex.type==='weighted') head = `<div class="sets-header grid-weighted"><span>#</span><span>KG</span><span>REPS</span><span>OK</span></div>`;
         else head = `<div class="sets-header grid-simple"><span>#</span><span>${ex.type==='time'?'TIEMPO':'REPS'}</span><span>OK</span></div>`;
+        
+        // MODIFICADO: Layout de Cabecera de Tarjeta
         c.innerHTML += `<div class="card ex-card" data-n="${ex.name}" data-t="${ex.type}">
-            <div class="flex-between">
-                <div>
-                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
-                         <strong style="font-size:16px">${ex.name}</strong>
-                         ${ytBtn}
-                    </div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px">
+                <div style="flex:1; padding-right:10px">
+                    <strong style="font-size:16px; display:block; margin-bottom:4px; line-height:1.3">${ex.name}</strong>
                     ${lastLogHtml}
                     <div style="font-size:11px;color:var(--warning);margin-top:4px">${ex.note}</div>
                 </div>
-                <button class="btn small" onclick="addSet(this, '${ex.type}')">${btnTxt}</button>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width:80px">
+                    ${ytBtn}
+                    <button class="btn small" onclick="addSet(this, '${ex.type}')">${btnTxt}</button>
+                </div>
             </div>
             <div style="margin-top:15px">${head}<div class="sets"></div></div>
         </div>`;
@@ -726,10 +688,13 @@ function startWorkout(id) {
 }
 
 function addSet(btn, type) {
-    const w=btn.parentElement.nextElementSibling.querySelector('.sets'), n=w.children.length+1, d=document.createElement('div');
-    let inp=type==='weighted'?`<input type="number" placeholder="kg" class="val-kg"><input type="number" placeholder="reps" class="val-reps">`:`<input type="${type==='time'?'text':'number'}" placeholder="${type==='time'?'30s':'Reps'}" class="val-reps">`;
-    d.className=`set-row ${type} ${type==='weighted'?'grid-weighted':'grid-simple'}`; 
-    d.innerHTML=`<span class="set-num">${n}</span>${inp}<div class="check-btn" onclick="toggleCheck(this)"><i class="ri-check-line"></i></div>`;
+    const card = btn.closest('.ex-card');
+    const w = card.querySelector('.sets');
+    const n = w.children.length + 1;
+    const d = document.createElement('div');
+    let inp = type === 'weighted' ? `<input type="number" placeholder="kg" class="val-kg"><input type="number" placeholder="reps" class="val-reps">` : `<input type="${type === 'time' ? 'text' : 'number'}" placeholder="${type === 'time' ? '30s' : 'Reps'}" class="val-reps">`;
+    d.className = `set-row ${type} ${type === 'weighted' ? 'grid-weighted' : 'grid-simple'}`;
+    d.innerHTML = `<span class="set-num">${n}</span>${inp}<div class="check-btn" onclick="toggleCheck(this)"><i class="ri-check-line"></i></div>`;
     w.appendChild(d);
 }
 
